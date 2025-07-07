@@ -1,0 +1,153 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Recommendation Details - CropCare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4><i class="bi bi-lightbulb"></i> Treatment Recommendation</h4>
+                    <span class="badge bg-{{ recommendation.priority_level|yesno:'danger,warning,success,primary' }} fs-6">
+                        {{ recommendation.get_priority_level_display }} Priority
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Diagnosis Information</h6>
+                            <p><strong>Crop:</strong> {{ recommendation.diagnosis_result.diagnosis_request.crop.name }}</p>
+                            <p><strong>Disease:</strong> {{ recommendation.diagnosis_result.disease.name }}</p>
+                            <p><strong>Confidence:</strong> {{ recommendation.diagnosis_result.confidence|floatformat:1 }}%</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Treatment Overview</h6>
+                            {% if recommendation.estimated_cost %}
+                                <p><strong>Estimated Cost:</strong> ${{ recommendation.estimated_cost }}</p>
+                            {% endif %}
+                            {% if recommendation.timeline %}
+                                <p><strong>Timeline:</strong> {{ recommendation.timeline }}</p>
+                            {% endif %}
+                            <p><strong>Follow-up Required:</strong> {{ recommendation.follow_up_required|yesno:"Yes,No" }}</p>
+                        </div>
+                    </div>
+
+                    {% if recommendation.custom_recommendations %}
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> Custom Recommendations</h6>
+                            <p>{{ recommendation.custom_recommendations }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Treatment Details -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-prescription2"></i> Recommended Treatments</h5>
+                </div>
+                <div class="card-body">
+                    {% for treatment_rec in treatment_recommendations %}
+                        <div class="treatment-item mb-4 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6>{{ treatment_rec.treatment.name }}</h6>
+                                    <span class="badge bg-secondary">{{ treatment_rec.treatment.get_treatment_type_display }}</span>
+                                    {% if treatment_rec.treatment.organic_friendly %}
+                                        <span class="badge bg-success">Organic Friendly</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <strong>Order: {{ treatment_rec.order }}</strong>
+                                    {% if treatment_rec.treatment.effectiveness_rating %}
+                                        <div class="mt-1">
+                                            {% for i in "12345" %}
+                                                {% if forloop.counter <= treatment_rec.treatment.effectiveness_rating %}
+                                                    <i class="bi bi-star-fill text-warning"></i>
+                                                {% else %}
+                                                    <i class="bi bi-star text-muted"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <h6>Application Method</h6>
+                                    <p>{{ treatment_rec.treatment.application_method }}</p>
+                                    
+                                    {% if treatment_rec.quantity_needed %}
+                                        <h6>Quantity Needed</h6>
+                                        <p>{{ treatment_rec.quantity_needed }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Dosage Instructions</h6>
+                                    <p>{{ treatment_rec.treatment.dosage_instructions }}</p>
+                                    
+                                    {% if treatment_rec.application_frequency %}
+                                        <h6>Frequency</h6>
+                                        <p>{{ treatment_rec.application_frequency }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if treatment_rec.specific_instructions %}
+                                <div class="alert alert-warning">
+                                    <h6><i class="bi bi-exclamation-triangle"></i> Specific Instructions</h6>
+                                    <p>{{ treatment_rec.specific_instructions }}</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if treatment_rec.treatment.safety_precautions %}
+                                <div class="alert alert-danger">
+                                    <h6><i class="bi bi-shield-exclamation"></i> Safety Precautions</h6>
+                                    <p>{{ treatment_rec.treatment.safety_precautions }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">No specific treatments recommended yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-calendar-check"></i> Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'recommendations:track' recommendation.id %}" class="btn btn-primary">
+                            <i class="bi bi-clipboard-check"></i> Track Treatment Progress
+                        </a>
+                        <a href="{% url 'diagnosis:detail' recommendation.diagnosis_result.diagnosis_request.id %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-eye"></i> View Original Diagnosis
+                        </a>
+                        <a href="{% url 'recommendations:list' %}" class="btn btn-outline-success">
+                            <i class="bi bi-arrow-left"></i> Back to Recommendations
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            {% if recommendation.follow_up_date %}
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h6><i class="bi bi-calendar-event"></i> Follow-up</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Next Follow-up:</strong> {{ recommendation.follow_up_date|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

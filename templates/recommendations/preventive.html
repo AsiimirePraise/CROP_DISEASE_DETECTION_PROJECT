@@ -1,0 +1,139 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Preventive Measures - CropCare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-shield-check"></i> Preventive Measures</h1>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" name="search" class="form-control" placeholder="Search preventive measures..." value="{{ search_query|default:'' }}">
+                </div>
+                <div class="col-md-3">
+                    <select name="cost" class="form-select">
+                        <option value="">All Cost Levels</option>
+                        <option value="low" {% if cost_filter == 'low' %}selected{% endif %}>Low Cost</option>
+                        <option value="medium" {% if cost_filter == 'medium' %}selected{% endif %}>Medium Cost</option>
+                        <option value="high" {% if cost_filter == 'high' %}selected{% endif %}>High Cost</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="difficulty" class="form-select">
+                        <option value="">All Difficulty Levels</option>
+                        <option value="easy" {% if difficulty_filter == 'easy' %}selected{% endif %}>Easy</option>
+                        <option value="medium" {% if difficulty_filter == 'medium' %}selected{% endif %}>Medium</option>
+                        <option value="hard" {% if difficulty_filter == 'hard' %}selected{% endif %}>Hard</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-search"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Preventive Measures Grid -->
+    {% if page_obj %}
+        <div class="row">
+            {% for measure in page_obj %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">{{ measure.name }}</h6>
+                            <div>
+                                <span class="badge bg-{% if measure.implementation_cost == 'low' %}success{% elif measure.implementation_cost == 'medium' %}warning{% else %}danger{% endif %}">
+                                    {{ measure.get_implementation_cost_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            {% if measure.effectiveness %}
+                                <div class="mb-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= measure.effectiveness %}
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        {% else %}
+                                            <i class="bi bi-star text-muted"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <small class="text-muted">({{ measure.effectiveness }}/5)</small>
+                                </div>
+                            {% endif %}
+                            
+                            <p class="card-text">{{ measure.description|truncatewords:20 }}</p>
+                            
+                            <div class="mt-auto">
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <small class="text-muted">Difficulty</small><br>
+                                        <span class="badge bg-{% if measure.difficulty_level == 'easy' %}success{% elif measure.difficulty_level == 'medium' %}warning{% else %}danger{% endif %}">
+                                            {{ measure.get_difficulty_level_display }}
+                                        </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Cost</small><br>
+                                        <span class="badge bg-{% if measure.implementation_cost == 'low' %}success{% elif measure.implementation_cost == 'medium' %}warning{% else %}danger{% endif %}">
+                                            {{ measure.get_implementation_cost_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                {% if measure.seasonal_timing %}
+                                    <div class="mt-2">
+                                        <small class="text-muted"><i class="bi bi-calendar"></i> Best timing: {{ measure.seasonal_timing }}</small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Preventive measures pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if cost_filter %}&cost={{ cost_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if cost_filter %}&cost={{ cost_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if cost_filter %}&cost={{ cost_filter }}{% endif %}{% if difficulty_filter %}&difficulty={{ difficulty_filter }}{% endif %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-shield-check text-muted" style="font-size: 5rem;"></i>
+            <h3 class="mt-3">No preventive measures found</h3>
+            <p class="text-muted">No measures match your search criteria</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

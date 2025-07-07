@@ -1,0 +1,103 @@
+
+{% extends 'base.html' %}
+
+{% block title %}My Recommendations - CropCare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-lightbulb"></i> Treatment Recommendations</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <a href="{% url 'recommendations:preventive' %}" class="btn btn-outline-success">
+                <i class="bi bi-shield-check"></i> Preventive Measures
+            </a>
+        </div>
+    </div>
+
+    {% if page_obj %}
+        <div class="row">
+            {% for recommendation in page_obj %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">{{ recommendation.diagnosis_result.diagnosis_request.crop.name }}</h6>
+                            <span class="badge bg-{{ recommendation.priority_level|yesno:'danger,warning,success,primary' }}">
+                                {{ recommendation.get_priority_level_display }}
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Disease:</strong> {{ recommendation.diagnosis_result.disease.name }}<br>
+                                <strong>Confidence:</strong> {{ recommendation.diagnosis_result.confidence|floatformat:1 }}%
+                            </p>
+                            
+                            {% if recommendation.estimated_cost %}
+                                <p class="text-muted">
+                                    <i class="bi bi-currency-dollar"></i> Est. Cost: ${{ recommendation.estimated_cost }}
+                                </p>
+                            {% endif %}
+                            
+                            {% if recommendation.timeline %}
+                                <p class="text-muted">
+                                    <i class="bi bi-clock"></i> Timeline: {{ recommendation.timeline }}
+                                </p>
+                            {% endif %}
+                            
+                            <div class="mt-auto">
+                                <a href="{% url 'recommendations:detail' recommendation.id %}" class="btn btn-primary btn-sm">
+                                    View Details
+                                </a>
+                                <a href="{% url 'recommendations:track' recommendation.id %}" class="btn btn-outline-secondary btn-sm">
+                                    Track Progress
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>{{ recommendation.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Recommendations pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-lightbulb text-muted" style="font-size: 5rem;"></i>
+            <h3 class="mt-3">No Recommendations Yet</h3>
+            <p class="text-muted">Get disease diagnoses first to receive treatment recommendations</p>
+            <a href="{% url 'diagnosis:create' %}" class="btn btn-primary">
+                <i class="bi bi-camera"></i> Start Diagnosis
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

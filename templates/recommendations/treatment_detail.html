@@ -1,0 +1,119 @@
+
+{% extends 'base.html' %}
+
+{% block title %}{{ treatment.name }} - Treatment Details - CropCare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>{{ treatment.name }}</h4>
+                    <div>
+                        <span class="badge bg-secondary">{{ treatment.get_treatment_type_display }}</span>
+                        {% if treatment.organic_friendly %}
+                            <span class="badge bg-success">Organic Friendly</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if treatment.effectiveness_rating %}
+                        <div class="mb-3">
+                            <h6>Effectiveness Rating</h6>
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= treatment.effectiveness_rating %}
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                {% else %}
+                                    <i class="bi bi-star text-muted"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="ms-2">{{ treatment.effectiveness_rating }}/5</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Application Method</h6>
+                            <p>{{ treatment.application_method }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Treatment Category</h6>
+                            <p>{{ treatment.category.name }}</p>
+                            {% if treatment.category.description %}
+                                <small class="text-muted">{{ treatment.category.description }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h6>Dosage Instructions</h6>
+                    <p>{{ treatment.dosage_instructions }}</p>
+
+                    {% if treatment.active_ingredients %}
+                        <h6>Active Ingredients</h6>
+                        <p>{{ treatment.active_ingredients }}</p>
+                    {% endif %}
+
+                    {% if treatment.safety_precautions %}
+                        <div class="alert alert-danger">
+                            <h6><i class="bi bi-shield-exclamation"></i> Safety Precautions</h6>
+                            <p class="mb-0">{{ treatment.safety_precautions }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if related_diseases %}
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5><i class="bi bi-bug"></i> Effective Against</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for disease in related_diseases %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-arrow-right text-success me-2"></i>
+                                        <span>{{ disease.name }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6><i class="bi bi-info-circle"></i> Treatment Info</h6>
+                </div>
+                <div class="card-body">
+                    {% if treatment.cost_estimate %}
+                        <p><strong>Estimated Cost:</strong> ${{ treatment.cost_estimate }}</p>
+                    {% endif %}
+                    <p><strong>Type:</strong> {{ treatment.get_treatment_type_display }}</p>
+                    <p><strong>Organic Friendly:</strong> {{ treatment.organic_friendly|yesno:"Yes,No" }}</p>
+                    <p><strong>Added:</strong> {{ treatment.created_at|date:"M d, Y" }}</p>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="bi bi-arrow-left"></i> Navigation</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'recommendations:treatments' %}" class="btn btn-outline-secondary">
+                            Back to Treatments
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

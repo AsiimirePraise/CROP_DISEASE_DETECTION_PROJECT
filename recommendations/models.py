@@ -47,6 +47,25 @@ class Treatment(models.Model):
         ordering = ['-effectiveness_rating', 'name']
 
 
+class EnvironmentalData(models.Model):
+    location = models.CharField(max_length=200)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    temperature = models.FloatField(help_text="Temperature in Celsius")
+    humidity = models.FloatField(help_text="Humidity percentage")
+    soil_type = models.CharField(max_length=100, blank=True)
+    ph_level = models.FloatField(null=True, blank=True, help_text="Soil pH level")
+    rainfall = models.FloatField(null=True, blank=True, help_text="Rainfall in mm")
+    wind_speed = models.FloatField(null=True, blank=True, help_text="Wind speed in km/h")
+    recorded_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.location} - {self.recorded_date.strftime('%Y-%m-%d')}"
+
+    class Meta:
+        ordering = ['-recorded_date']
+
+
 class Recommendation(models.Model):
     PRIORITY_LEVELS = [
         ('low', 'Low'),
@@ -57,7 +76,9 @@ class Recommendation(models.Model):
 
     diagnosis_result = models.ForeignKey(DiagnosisResult, on_delete=models.CASCADE)
     treatments = models.ManyToManyField(Treatment, through='TreatmentRecommendation')
+    environmental_data = models.ForeignKey(EnvironmentalData, on_delete=models.SET_NULL, null=True, blank=True)
     custom_recommendations = models.TextField(blank=True)
+    environmental_factors = models.TextField(blank=True, help_text="Environmental considerations")
     priority_level = models.CharField(max_length=10, choices=PRIORITY_LEVELS, default='medium')
     estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     timeline = models.CharField(max_length=200, blank=True, help_text="Expected treatment timeline")
@@ -138,3 +159,29 @@ class PreventiveMeasure(models.Model):
 
     class Meta:
         ordering = ['-effectiveness', 'name']
+
+
+class RegionalDiseaseAlert(models.Model):
+    ALERT_LEVELS = [
+        ('low', 'Low Risk'),
+        ('medium', 'Medium Risk'),
+        ('high', 'High Risk'),
+        ('critical', 'Critical'),
+    ]
+
+    disease = models.ForeignKey(Disease, on_delete=models.CASCADE)
+    location = models.CharField(max_length=200)
+    alert_level = models.CharField(max_length=10, choices=ALERT_LEVELS)
+    description = models.TextField()
+    active_from = models.DateField()
+    active_to = models.DateField()
+    environmental_conditions = models.TextField(blank=True)
+    recommended_actions = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.disease.name} Alert - {self.location}"
+
+    class Meta:
+        ordering = ['-created_at']
