@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}IoT Dashboard - CropCare{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .iot-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .iot-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .device-status {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+    }
+    
+    .status-active { background-color: #28a745; }
+    .status-inactive { background-color: #6c757d; }
+    .status-error { background-color: #dc3545; }
+    .status-offline { background-color: #ffc107; }
+    
+    .sensor-reading {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--secondary-green);
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin: 20px 0;
+    }
+    
+    .alert-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #dc3545;
+        color: white;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2 mb-0">
+                <i class="bi bi-cpu"></i> IoT Dashboard
+            </h1>
+            <p class="text-muted">Real-time monitoring of your farm sensors and devices</p>
+        </div>
+    </div>
+
+    <!-- Device Status Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card iot-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-hdd-network text-primary" style="font-size: 2rem;"></i>
+                    <div class="sensor-reading">{{ device_stats.total }}</div>
+                    <div class="text-muted">Total Devices</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card iot-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                    <div class="sensor-reading">{{ device_stats.active }}</div>
+                    <div class="text-muted">Active</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card iot-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-wifi-off text-warning" style="font-size: 2rem;"></i>
+                    <div class="sensor-reading">{{ device_stats.offline }}</div>
+                    <div class="text-muted">Offline</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card iot-card">
+                <div class="card-body text-center position-relative">
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
+                    <div class="sensor-reading">{{ device_stats.error }}</div>
+                    <div class="text-muted">Errors</div>
+                    {% if active_alerts %}
+                    <div class="alert-badge">{{ active_alerts|length }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Devices and Alerts -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+            <div class="card iot-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-list-ul"></i> Device Status
+                    </h5>
+                    <a href="{% url 'iot_integration:device_add' %}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus"></i> Add Device
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for device in devices %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="device-status status-{{ device.status }}"></span>
+                                        <h6 class="mb-0">{{ device.name }}</h6>
+                                    </div>
+                                    <p class="text-muted mb-1">{{ device.get_device_type_display }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            {% if device.last_communication %}
+                                                Last: {{ device.last_communication|timesince }} ago
+                                            {% else %}
+                                                Never communicated
+                                            {% endif %}
+                                        </small>
+                                        {% if device.battery_level %}
+                                        <span class="badge bg-info">{{ device.battery_level|floatformat:0 }}%</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mt-2">
+                                        <a href="{% url 'iot_integration:device_detail' device.device_id %}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="text-center py-4">
+                                <i class="bi bi-hdd-network text-muted" style="font-size: 3rem;"></i>
+                                <h5 class="text-muted mt-3">No Devices Found</h5>
+                                <p class="text-muted">Add your first IoT device to start monitoring</p>
+                                <a href="{% url 'iot_integration:device_add' %}" class="btn btn-primary">
+                                    <i class="bi bi-plus"></i> Add Device
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card iot-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-bell"></i> Active Alerts
+                    </h5>
+                </div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    {% for alert in active_alerts %}
+                    <div class="alert alert-{% if alert.severity == 'critical' %}danger{% elif alert.severity == 'high' %}warning{% else %}info{% endif %} py-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>{{ alert.device.name }}</strong>
+                                <p class="mb-1 small">{{ alert.message }}</p>
+                                <small class="text-muted">{{ alert.triggered_date|timesince }} ago</small>
+                            </div>
+                            <a href="{% url 'iot_integration:acknowledge_alert' alert.id %}" 
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-check"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                        <p class="text-muted mt-2">No active alerts</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sensor Data Chart -->
+    {% if chart_data %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card iot-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Real-time Sensor Data (Last 24 Hours)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="sensorChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Readings -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card iot-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-activity"></i> Recent Sensor Readings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Device</th>
+                                    <th>Sensor Type</th>
+                                    <th>Value</th>
+                                    <th>Unit</th>
+                                    <th>Quality</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reading in recent_readings %}
+                                <tr>
+                                    <td>
+                                        <span class="device-status status-{{ reading.device.status }}"></span>
+                                        {{ reading.device.name }}
+                                    </td>
+                                    <td>{{ reading.get_sensor_type_display }}</td>
+                                    <td class="sensor-reading">{{ reading.value|floatformat:2 }}</td>
+                                    <td>{{ reading.get_unit_display|default:reading.unit }}</td>
+                                    <td>
+                                        <span class="badge bg-{% if reading.quality_score >= 0.8 %}success{% elif reading.quality_score >= 0.6 %}warning{% else %}danger{% endif %}">
+                                            {{ reading.quality_score|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                    <td>{{ reading.timestamp|date:"M d, H:i" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">No recent readings available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Real-time sensor data chart
+{% if chart_data %}
+const chartData = {{ chart_data|safe }};
+
+if (chartData.length > 0) {
+    const ctx = document.getElementById('sensorChart').getContext('2d');
+    
+    const datasets = chartData.map((deviceData, index) => ({
+        label: deviceData.device_name,
+        data: deviceData.data.map(item => ({
+            x: item.time,
+            y: item.value
+        })),
+        borderColor: `hsl(${index * 60}, 70%, 50%)`,
+        backgroundColor: `hsla(${index * 60}, 70%, 50%, 0.1)`,
+        tension: 0.4,
+        fill: false
+    }));
+    
+    const sensorChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            scales: {
+                x: {
+                    type: 'category',
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Value'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            }
+        }
+    });
+}
+{% endif %}
+
+// Auto-refresh device status every 30 seconds
+setInterval(function() {
+    fetch('/iot/api/device-status/')
+        .then(response => response.json())
+        .then(data => {
+            // Update device status indicators
+            console.log('Device status updated:', data);
+        })
+        .catch(error => console.error('Error updating device status:', error));
+}, 30000);
+</script>
+{% endblock %}

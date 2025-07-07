@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analytics Dashboard - CropCare{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .analytics-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .analytics-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--secondary-green);
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 400px;
+        margin: 20px 0;
+    }
+    
+    .mini-chart {
+        height: 200px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2 mb-0">
+                <i class="bi bi-graph-up"></i> Analytics Dashboard
+            </h1>
+            <p class="text-muted">Comprehensive insights into your crop health diagnostics</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card analytics-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-clipboard-data text-primary" style="font-size: 2rem;"></i>
+                    <div class="stat-number">{{ stats.total_diagnoses }}</div>
+                    <div class="text-muted">Total Diagnoses</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card analytics-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-week text-info" style="font-size: 2rem;"></i>
+                    <div class="stat-number">{{ stats.recent_diagnoses }}</div>
+                    <div class="text-muted">Recent (30 days)</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card analytics-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
+                    <div class="stat-number">{{ stats.completed_diagnoses }}</div>
+                    <div class="text-muted">Completed</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card analytics-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-star text-warning" style="font-size: 2rem;"></i>
+                    <div class="stat-number">{{ stats.accuracy_rate|floatformat:1 }}%</div>
+                    <div class="text-muted">Accuracy Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-4">
+            <div class="card analytics-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up"></i> Diagnosis Trends (12 Months)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="trendsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card analytics-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pie-chart"></i> Disease Distribution
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container mini-chart">
+                        <canvas id="diseaseChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Trends and Export -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card analytics-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-trending-up"></i> Recent Trend Analysis
+                    </h5>
+                    <a href="{% url 'analytics:trends' %}" class="btn btn-outline-primary btn-sm">
+                        View All Trends
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% for trend in recent_trends %}
+                    <div class="d-flex align-items-center mb-3 p-3 bg-light rounded">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ trend.title }}</h6>
+                            <p class="text-muted mb-1">{{ trend.description|truncatewords:20 }}</p>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar"></i> {{ trend.start_date }} - {{ trend.end_date }}
+                            </small>
+                        </div>
+                        <div class="ms-3">
+                            <span class="badge bg-primary">{{ trend.significance_score|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">No recent trends available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card analytics-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-download"></i> Export Data
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'analytics:generate_report' %}" class="btn btn-primary">
+                            <i class="bi bi-file-earmark-text"></i> Generate Report
+                        </a>
+                        <a href="?export=csv" class="btn btn-outline-secondary">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+                        </a>
+                        <a href="?export=pdf" class="btn btn-outline-secondary">
+                            <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Chart.js configuration
+const chartData = {{ chart_data|safe }};
+const diseaseData = {{ disease_data|safe }};
+
+// Trends Line Chart
+const trendsCtx = document.getElementById('trendsChart').getContext('2d');
+const trendsChart = new Chart(trendsCtx, {
+    type: 'line',
+    data: {
+        labels: chartData.map(item => item.month),
+        datasets: [{
+            label: 'Diagnoses',
+            data: chartData.map(item => item.diagnoses),
+            borderColor: 'rgb(54, 162, 235)',
+            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+
+// Disease Distribution Pie Chart
+const diseaseCtx = document.getElementById('diseaseChart').getContext('2d');
+const diseaseChart = new Chart(diseaseCtx, {
+    type: 'doughnut',
+    data: {
+        labels: diseaseData.map(item => item.name),
+        datasets: [{
+            data: diseaseData.map(item => item.count),
+            backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56',
+                '#4BC0C0',
+                '#9966FF',
+                '#FF9F40'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
