@@ -52,7 +52,7 @@ def register_view(request):
 @ratelimit(key='ip', rate='10/m', method='POST')
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('accounts:dashboard')
     
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, data=request.POST)
@@ -71,7 +71,7 @@ def login_view(request):
                     success=True
                 )
                 messages.success(request, f'Welcome back, {user.first_name}!')
-                return redirect(request.GET.get('next', 'dashboard'))
+                return redirect(request.GET.get('next', 'accounts:dashboard'))
         
         # Log failed attempt
         email = request.POST.get('username', '')
