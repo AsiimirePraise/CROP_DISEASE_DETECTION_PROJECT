@@ -12,6 +12,7 @@ urlpatterns = [
     path('diagnosis/', include('diagnosis.urls')),
     path('recommendations/', include('recommendations.urls')),
     path('analytics/', include('analytics.urls')),
+    
     path('admin-panel/', include('admin_panel.urls')),
     path('api/', include('CropDiseaseDetector.api_urls')),
 ]

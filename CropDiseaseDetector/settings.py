@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'diagnosis',
     'recommendations',
     'analytics',
+    
     'admin_panel',
 ]
 

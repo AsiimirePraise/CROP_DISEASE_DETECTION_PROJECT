@@ -1,8 +1,6 @@
-// TypeScript version for Lovable compatibility
+// Minimal Vite config for Lovable compatibility
 // This project uses Django templates only
-import { defineConfig } from 'vite'
-
-export default defineConfig({
+export default {
   server: {
     host: "::",
     port: 8080,
@@ -11,4 +9,4 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: false
   }
-})
+}
