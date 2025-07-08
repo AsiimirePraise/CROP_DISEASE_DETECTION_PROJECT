@@ -26,16 +26,6 @@ def dashboard(request):
     latest_timestamps = SensorReading.objects.values('field', 'sensor_type').annotate(
         latest_recorded=Max('recorded_at')
     )
-    q_filter = Q()
-    for record in latest_timestamps:
-        q_filter |= Q(
-            field=record['field'],
-            sensor_type=record['sensor_type'],
-            recorded_at=record['latest_recorded']
-        )
-
-    # Retrieve actual SensorReading instances
-    latest_sensors = SensorReading.objects.filter(q_filter).select_related('field')[:8]
 
     # Pending treatment recommendations
     pending_treatments = TreatmentRecommendation.objects.filter(
@@ -45,7 +35,6 @@ def dashboard(request):
     context = {
         'todays_diagnoses': todays_diagnoses,
         'top_diseases': top_diseases,
-        'latest_sensors': latest_sensors,
         'pending_treatments': pending_treatments,
     }
     return render(request, 'dashboard/dashboard.html', context)
@@ -53,10 +42,6 @@ def dashboard(request):
 
 def disease_reports(request):
     return render(request, 'dashboard/disease_reports.html')
-
-
-def iot_data(request):
-    return render(request, 'dashboard/iot_data.html')
 
 
 def analytics(request):

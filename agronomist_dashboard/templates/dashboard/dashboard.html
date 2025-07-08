@@ -26,7 +26,7 @@
                     <div class="confidence-bar">
                         <span class="confidence-text">{{ diagnosis.confidence }}%</span>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ diagnosis.confidence }}%"></div>
+                            <div class="progress-fill" style="width: {{ diagnosis.confidence|default_if_none:'0' }}%;"></div>
                         </div>
                     </div>
                 </div>
@@ -64,42 +64,6 @@
             </div>
             {% empty %}
             <p class="no-data">No disease data available for this week.</p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <!-- Sensor Data -->
-    <div class="card large-card">
-        <div class="card-header">
-            <h3 class="card-title">
-                <i class="fas fa-thermometer-half text-green"></i>
-                Real-time Sensor Data
-            </h3>
-        </div>
-        <div class="card-content sensor-grid">
-            {% for sensor in latest_sensors %}
-            <div class="sensor-card">
-                <div class="sensor-icon">
-                    {% if sensor.sensor_type == 'TEMPERATURE' %}
-                        <i class="fas fa-thermometer-half"></i>
-                    {% elif sensor.sensor_type == 'HUMIDITY' %}
-                        <i class="fas fa-tint"></i>
-                    {% elif sensor.sensor_type == 'SOIL_MOISTURE' %}
-                        <i class="fas fa-seedling"></i>
-                    {% elif sensor.sensor_type == 'PH' %}
-                        <i class="fas fa-vial"></i>
-                    {% else %}
-                        <i class="fas fa-sun"></i>
-                    {% endif %}
-                </div>
-                <div class="sensor-data">
-                    <h4>{{ sensor.get_sensor_type_display }}</h4>
-                    <div class="sensor-value">{{ sensor.value }} {{ sensor.unit }}</div>
-                    <p class="sensor-field">{{ sensor.field.name }}</p>
-                </div>
-            </div>
-            {% empty %}
-            <p class="no-data">No sensor data available.</p>
             {% endfor %}
         </div>
     </div>
