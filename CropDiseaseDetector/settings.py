@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'diagnosis',
     'recommendations',
     'analytics',
-    'iot_integration',
     'admin_panel',
 ]
 
