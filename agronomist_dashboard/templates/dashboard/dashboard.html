@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AgriSmart{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Today's Diagnoses -->
+    <div class="card large-card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-calendar text-blue"></i>
+                Today's Diagnoses
+            </h3>
+        </div>
+        <div class="card-content">
+            {% for diagnosis in todays_diagnoses %}
+            <div class="diagnosis-item">
+                <div class="diagnosis-info">
+                    <h4>{{ diagnosis.field.crop.name }} - {{ diagnosis.disease.name }}</h4>
+                    <p class="text-muted">{{ diagnosis.field.name }} • {{ diagnosis.diagnosed_at|time:"g:i A" }}</p>
+                </div>
+                <div class="diagnosis-meta">
+                    <span class="severity-badge severity-{{ diagnosis.severity|lower }}">
+                        {{ diagnosis.get_severity_display }}
+                    </span>
+                    <div class="confidence-bar">
+                        <span class="confidence-text">{{ diagnosis.confidence }}%</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ diagnosis.confidence }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-data">No diagnoses recorded today.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Top Diseases -->
+    <div class="card large-card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-exclamation-triangle text-orange"></i>
+                Top 3 Diseases This Week
+            </h3>
+        </div>
+        <div class="card-content">
+            {% for disease in top_diseases %}
+            <div class="disease-item">
+                <div class="disease-rank">{{ forloop.counter }}</div>
+                <div class="disease-info">
+                    <h4>{{ disease.name }}</h4>
+                    <p class="text-muted">
+                        Affects: {% for crop in disease.affected_crops.all %}{{ crop.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </p>
+                </div>
+                <div class="disease-stats">
+                    <span class="occurrence-count">{{ disease.occurrence_count }}</span>
+                    <span class="severity-text severity-{{ disease.severity|lower }}">
+                        {{ disease.get_severity_display }} Risk
+                    </span>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-data">No disease data available for this week.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Sensor Data -->
+    <div class="card large-card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-thermometer-half text-green"></i>
+                Real-time Sensor Data
+            </h3>
+        </div>
+        <div class="card-content sensor-grid">
+            {% for sensor in latest_sensors %}
+            <div class="sensor-card">
+                <div class="sensor-icon">
+                    {% if sensor.sensor_type == 'TEMPERATURE' %}
+                        <i class="fas fa-thermometer-half"></i>
+                    {% elif sensor.sensor_type == 'HUMIDITY' %}
+                        <i class="fas fa-tint"></i>
+                    {% elif sensor.sensor_type == 'SOIL_MOISTURE' %}
+                        <i class="fas fa-seedling"></i>
+                    {% elif sensor.sensor_type == 'PH' %}
+                        <i class="fas fa-vial"></i>
+                    {% else %}
+                        <i class="fas fa-sun"></i>
+                    {% endif %}
+                </div>
+                <div class="sensor-data">
+                    <h4>{{ sensor.get_sensor_type_display }}</h4>
+                    <div class="sensor-value">{{ sensor.value }} {{ sensor.unit }}</div>
+                    <p class="sensor-field">{{ sensor.field.name }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-data">No sensor data available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Treatment Recommendations -->
+    <div class="card large-card">
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-prescription-bottle-alt text-purple"></i>
+                Pending Treatment Recommendations
+            </h3>
+        </div>
+        <div class="card-content">
+            {% for treatment in pending_treatments %}
+            <div class="treatment-item">
+                <div class="treatment-info">
+                    <h4>{{ treatment.diagnosis.field.name }} - {{ treatment.diagnosis.disease.name }}</h4>
+                    <p class="treatment-text">{{ treatment.treatment|truncatewords:15 }}</p>
+                    <p class="text-muted">Recommended by: {{ treatment.recommended_by }}</p>
+                </div>
+                <div class="treatment-actions">
+                    {% if treatment.estimated_cost %}
+                    <span class="cost-estimate">${{ treatment.estimated_cost }}</span>
+                    {% endif %}
+                    <button class="btn btn-success btn-sm">Approve</button>
+                    <button class="btn btn-danger btn-sm">Reject</button>
+                </div>
+            </div>
+            {% empty %}
+            <p class="no-data">No pending treatment recommendations.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
