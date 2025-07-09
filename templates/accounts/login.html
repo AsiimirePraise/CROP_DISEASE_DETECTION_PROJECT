@@ -1,18 +1,19 @@
 
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}Login - CropCare{% endblock %}
 
 {% block content %}
-<div class="min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, rgba(45, 90, 39, 0.1), rgba(82, 164, 71, 0.1)), url('/lovable-uploads/b247ad4a-c6ac-4799-b9b8-9c5d44b48703.png'); background-size: cover; background-position: center;">
+<div class="min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, rgba(45, 90, 39, 0.1), rgba(82, 164, 71, 0.1)), url('{% static "images/background-farm.png" %}'); background-size: cover; background-position: center;">
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
                 <div class="card border-0 shadow-lg">
                     <div class="card-header text-center bg-white border-0 py-4">
                         <div class="mb-3">
-                            <img src="/lovable-uploads/5b5377d9-8477-49ce-87cc-ff48f9541ec1.png" 
+                            <img src="{% static 'images/farmer-success.png' %}" 
                                  class="rounded-circle shadow" 
                                  style="width: 80px; height: 80px; object-fit: cover;" 
                                  alt="Welcome">

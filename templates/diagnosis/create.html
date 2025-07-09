@@ -1,6 +1,7 @@
 
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block title %}New Diagnosis - CropCare{% endblock %}
 
@@ -11,7 +12,7 @@
             <div class="col-lg-8">
                 <div class="text-center mb-5">
                     <div class="mb-4">
-                        <img src="/lovable-uploads/16cc831d-0917-4038-875d-6873abca330f.png" 
+                        <img src="{% static 'images/ai-technology.png' %}" 
                              class="rounded shadow" 
                              style="width: 200px; height: 120px; object-fit: cover;" 
                              alt="AI Technology">
@@ -44,7 +45,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="text-center">
-                                        <img src="/lovable-uploads/9456b96f-5e91-4eda-8ada-562c1e1a8ad5.png" 
+                                        <img src="{% static 'images/plant-growth.png' %}" 
                                              class="rounded shadow" 
                                              style="width: 120px; height: 120px; object-fit: cover;" 
                                              alt="Plant care">

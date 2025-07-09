@@ -1,5 +1,6 @@
 
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -73,7 +74,7 @@
             <div class="col-md-4">
                 <div class="card h-100 feature-card border-0 shadow-lg">
                     <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
-                        <img src="/lovable-uploads/16cc831d-0917-4038-875d-6873abca330f.png" 
+                        <img src="{% static 'images/ai-technology.png' %}" 
                              class="w-100 h-100 object-fit-cover" alt="AI Technology">
                         <div class="position-absolute top-0 start-0 w-100 h-100 bg-success bg-opacity-50 d-flex align-items-center justify-content-center">
                             <i class="bi bi-robot text-white" style="font-size: 3rem;"></i>
@@ -89,7 +90,7 @@
             <div class="col-md-4">
                 <div class="card h-100 feature-card border-0 shadow-lg">
                     <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
-                        <img src="/lovable-uploads/9456b96f-5e91-4eda-8ada-562c1e1a8ad5.png" 
+                        <img src="{% static 'images/plant-growth.png' %}" 
                              class="w-100 h-100 object-fit-cover" alt="Plant Growth">
                         <div class="position-absolute top-0 start-0 w-100 h-100 bg-warning bg-opacity-50 d-flex align-items-center justify-content-center">
                             <i class="bi bi-clock text-white" style="font-size: 3rem;"></i>
@@ -105,7 +106,7 @@
             <div class="col-md-4">
                 <div class="card h-100 feature-card border-0 shadow-lg">
                     <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
-                        <img src="/lovable-uploads/5b5377d9-8477-49ce-87cc-ff48f9541ec1.png" 
+                        <img src="{% static 'images/farmer-success.png' %}" 
                              class="w-100 h-100 object-fit-cover" alt="Farmer Success">
                         <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary bg-opacity-50 d-flex align-items-center justify-content-center">
                             <i class="bi bi-graph-up text-white" style="font-size: 3rem;"></i>

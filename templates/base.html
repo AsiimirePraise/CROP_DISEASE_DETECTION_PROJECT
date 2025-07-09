@@ -1,4 +1,5 @@
 
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,7 +81,7 @@
         
         .hero-section {
             background: linear-gradient(135deg, rgba(45, 90, 39, 0.9), rgba(82, 164, 71, 0.8)), 
-                        url('/lovable-uploads/b247ad4a-c6ac-4799-b9b8-9c5d44b48703.png');
+                        url('{% static "images/background-farm.png" %}');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
