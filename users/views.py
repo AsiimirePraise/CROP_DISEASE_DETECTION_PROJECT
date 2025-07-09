@@ -48,7 +48,9 @@ def home(request):
 def dashboard(request):
     """Main dashboard that redirects based on user role"""
     try:
-        user_role = request.user.profile.get_user_role()
+         # Ensure user has a profile
+        if hasattr(request.user, 'profile'):
+            user_role = request.user.profile.get_user_role()
         
         if user_role == 'farmer':
             return render(request, 'dashboard/farmer_dashboard.html', {'user_role': 'farmer'})

@@ -128,3 +128,17 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ # Email configuration 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # For Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'marvin.bisaso99@gmail.com'  # Your email
+EMAIL_HOST_PASSWORD = 'qcrn cqeu grig sfid'  # Your app password (not regular password)
+DEFAULT_FROM_EMAIL = 'marvin.bisaso99@gmail.com'  
+
+# Redirect URLs after login/logout
+LOGIN_REDIRECT_URL = 'dashboard'  # Redirect to dashboard after login
+LOGOUT_REDIRECT_URL = 'home'      # Redirect to home after logout
+LOGIN_URL = 'login'               # Redirect to login page when login required
