@@ -1,0 +1,16 @@
+<h2>Welcome, {{ user.username }}!</h2>
+<p>This is your dashboard.</p>
+
+<h2>Hello, {{ user.username }}!</h2>
+<p>You're logged in as a {{ user.user_type|title }}.</p>
+
+<div>
+    <h3>What would you like to do?</h3>
+    <ul>
+        <li><a href="#">Upload Crop Image</a> (Coming soon)</li>
+        <li><a href="#">View Diagnosis History</a> (Coming soon)</li>
+    </ul>
+</div>
+
+
+<a href="{% url 'logout' %}">Logout</a>
