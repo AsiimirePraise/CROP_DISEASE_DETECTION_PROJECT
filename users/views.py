@@ -6,6 +6,7 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 
 
+
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -53,7 +54,8 @@ def dashboard(request):
             user_role = request.user.profile.get_user_role()
         
         if user_role == 'farmer':
-            return render(request, 'dashboard/farmer_dashboard.html', {'user_role': 'farmer'})
+              # Redirect to the diagnosis app's index view
+                return redirect('diagnosis:index')
         elif user_role == 'agronomist':
             return render(request, 'dashboard/agronomist_dashboard.html', {'user_role': 'agronomist'})
         elif user_role == 'extension_worker':
