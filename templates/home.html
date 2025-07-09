@@ -4,32 +4,57 @@
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section">
-    <div class="container">
+    <div class="container hero-content">
         <div class="row align-items-center">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">Protect Your Crops with AI-Powered Disease Detection</h1>
-                <p class="lead mb-4">Upload crop images, get instant disease diagnosis, and receive expert treatment recommendations to maximize your harvest.</p>
-                <div class="d-flex gap-3">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-3 fw-bold mb-4 text-shadow">Protect Your Crops with AI-Powered Disease Detection</h1>
+                <p class="lead mb-5 fs-4">Upload crop images, get instant disease diagnosis, and receive expert treatment recommendations to maximize your harvest.</p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
                     {% if user.is_authenticated %}
-                        <a href="{% url 'diagnosis:create' %}" class="btn btn-light btn-lg">
-                            <i class="bi bi-camera"></i> Start Diagnosis
+                        <a href="{% url 'diagnosis:create' %}" class="btn btn-light btn-lg px-4 py-3">
+                            <i class="bi bi-camera me-2"></i> Start Diagnosis
                         </a>
-                        <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-light btn-lg">
-                            View Dashboard
+                        <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-speedometer2 me-2"></i> View Dashboard
                         </a>
                     {% else %}
-                        <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg">
-                            Get Started Free
+                        <a href="{% url 'accounts:register' %}" class="btn btn-light btn-lg px-4 py-3">
+                            <i class="bi bi-person-plus me-2"></i> Get Started Free
                         </a>
-                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg">
-                            Sign In
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
                         </a>
                     {% endif %}
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="text-center">
-                    <i class="bi bi-camera-fill" style="font-size: 200px; opacity: 0.8;"></i>
+        </div>
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="text-center text-white">
+                            <h3 class="display-6 fw-bold">1000+</h3>
+                            <p class="mb-0">Crops Analyzed</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center text-white">
+                            <h3 class="display-6 fw-bold">95%</h3>
+                            <p class="mb-0">Accuracy Rate</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center text-white">
+                            <h3 class="display-6 fw-bold">500+</h3>
+                            <p class="mb-0">Happy Farmers</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center text-white">
+                            <h3 class="display-6 fw-bold">24/7</h3>
+                            <p class="mb-0">Support</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -46,51 +71,72 @@
         
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card h-100 feature-card">
+                <div class="card h-100 feature-card border-0 shadow-lg">
+                    <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
+                        <img src="/lovable-uploads/16cc831d-0917-4038-875d-6873abca330f.png" 
+                             class="w-100 h-100 object-fit-cover" alt="AI Technology">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-success bg-opacity-50 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-robot text-white" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
                     <div class="card-body text-center">
-                        <i class="bi bi-robot text-success" style="font-size: 3rem;"></i>
-                        <h5 class="card-title mt-3">AI-Powered Detection</h5>
+                        <h5 class="card-title mt-3 text-success fw-bold">AI-Powered Detection</h5>
                         <p class="card-text">Advanced machine learning algorithms trained on thousands of crop disease images for accurate diagnosis.</p>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-4">
-                <div class="card h-100 feature-card">
+                <div class="card h-100 feature-card border-0 shadow-lg">
+                    <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
+                        <img src="/lovable-uploads/9456b96f-5e91-4eda-8ada-562c1e1a8ad5.png" 
+                             class="w-100 h-100 object-fit-cover" alt="Plant Growth">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-warning bg-opacity-50 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-clock text-white" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
                     <div class="card-body text-center">
-                        <i class="bi bi-clock text-success" style="font-size: 3rem;"></i>
-                        <h5 class="card-title mt-3">Instant Results</h5>
+                        <h5 class="card-title mt-3 text-warning fw-bold">Instant Results</h5>
                         <p class="card-text">Get disease diagnosis and treatment recommendations within seconds of uploading your crop images.</p>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-4">
-                <div class="card h-100 feature-card">
+                <div class="card h-100 feature-card border-0 shadow-lg">
+                    <div class="card-img-top position-relative overflow-hidden" style="height: 200px;">
+                        <img src="/lovable-uploads/5b5377d9-8477-49ce-87cc-ff48f9541ec1.png" 
+                             class="w-100 h-100 object-fit-cover" alt="Farmer Success">
+                        <div class="position-absolute top-0 start-0 w-100 h-100 bg-primary bg-opacity-50 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-graph-up text-white" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
                     <div class="card-body text-center">
-                        <i class="bi bi-graph-up text-success" style="font-size: 3rem;"></i>
-                        <h5 class="card-title mt-3">Track Progress</h5>
+                        <h5 class="card-title mt-3 text-primary fw-bold">Track Progress</h5>
                         <p class="card-text">Monitor treatment effectiveness and crop health over time with detailed analytics and reports.</p>
                     </div>
                 </div>
             </div>
             
-            
-            <div class="col-md-4">
-                <div class="card h-100 feature-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-people text-success" style="font-size: 3rem;"></i>
-                        <h5 class="card-title mt-3">Expert Network</h5>
+            <div class="col-md-6">
+                <div class="card h-100 feature-card border-0 shadow-lg">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-people text-info" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title text-info fw-bold">Expert Network</h5>
                         <p class="card-text">Access advice from agricultural experts and connect with other farmers in your region.</p>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4">
-                <div class="card h-100 feature-card">
-                    <div class="card-body text-center">
-                        <i class="bi bi-phone text-success" style="font-size: 3rem;"></i>
-                        <h5 class="card-title mt-3">Mobile Friendly</h5>
+            <div class="col-md-6">
+                <div class="card h-100 feature-card border-0 shadow-lg">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-phone text-secondary" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title text-secondary fw-bold">Mobile Friendly</h5>
                         <p class="card-text">Use CropCare anywhere in the field with our responsive design that works on all devices.</p>
                     </div>
                 </div>

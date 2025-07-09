@@ -5,35 +5,61 @@
 {% block title %}New Diagnosis - CropCare{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3><i class="bi bi-camera"></i> Upload Crop Image for Diagnosis</h3>
-                    <p class="mb-0 text-muted">Take a clear photo of the affected crop area for accurate diagnosis</p>
+<div class="container-fluid py-5" style="background: linear-gradient(135deg, rgba(245, 245, 220, 0.3), rgba(248, 249, 250, 0.8));">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-5">
+                    <div class="mb-4">
+                        <img src="/lovable-uploads/16cc831d-0917-4038-875d-6873abca330f.png" 
+                             class="rounded shadow" 
+                             style="width: 200px; height: 120px; object-fit: cover;" 
+                             alt="AI Technology">
+                    </div>
+                    <h2 class="fw-bold text-success mb-3">AI-Powered Crop Diagnosis</h2>
+                    <p class="lead text-muted">Upload your crop images and let our advanced AI analyze potential diseases</p>
                 </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        
-                        <div class="alert alert-info mt-3">
-                            <h6><i class="bi bi-info-circle"></i> Tips for better results:</h6>
-                            <ul class="mb-0">
-                                <li>Take photos in good lighting conditions</li>
-                                <li>Focus on the affected area with clear symptoms</li>
-                                <li>Include multiple angles if possible</li>
-                                <li>Ensure the image is not blurry</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="bi bi-upload"></i> Upload & Analyze
-                            </button>
-                        </div>
-                    </form>
+                
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-gradient text-white text-center py-4" style="background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));">
+                        <h3 class="mb-0"><i class="bi bi-camera me-2"></i> Upload Crop Image for Diagnosis</h3>
+                        <p class="mb-0 mt-2 opacity-75">Take a clear photo of the affected crop area for accurate diagnosis</p>
+                    </div>
+                    <div class="card-body p-5">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="alert alert-info border-0 bg-light">
+                                        <h6 class="fw-bold"><i class="bi bi-lightbulb text-warning me-2"></i>Tips for better results:</h6>
+                                        <ul class="mb-0 small">
+                                            <li>Take photos in good lighting conditions</li>
+                                            <li>Focus on the affected area with clear symptoms</li>
+                                            <li>Include multiple angles if possible</li>
+                                            <li>Ensure the image is not blurry</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-center">
+                                        <img src="/lovable-uploads/9456b96f-5e91-4eda-8ada-562c1e1a8ad5.png" 
+                                             class="rounded shadow" 
+                                             style="width: 120px; height: 120px; object-fit: cover;" 
+                                             alt="Plant care">
+                                        <p class="small text-muted mt-2">Our AI will analyze your crop's health</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-success btn-lg py-3">
+                                    <i class="bi bi-upload me-2"></i> Upload & Analyze with AI
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

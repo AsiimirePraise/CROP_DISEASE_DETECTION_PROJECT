@@ -14,11 +14,16 @@
             --light-green: #e8f5e8;
             --accent-orange: #ff8c42;
             --text-dark: #2c3e50;
+            --golden: #f4a531;
+            --earth-brown: #8b4513;
+            --sky-blue: #87ceeb;
+            --warm-beige: #f5f5dc;
         }
         
         body {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, #f8f9fa 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
         }
         
         .navbar-brand {
@@ -74,18 +79,58 @@
         }
         
         .hero-section {
-            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            background: linear-gradient(135deg, rgba(45, 90, 39, 0.9), rgba(82, 164, 71, 0.8)), 
+                        url('/lovable-uploads/b247ad4a-c6ac-4799-b9b8-9c5d44b48703.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: white;
-            padding: 80px 0;
+            padding: 100px 0;
+            border-radius: 0 0 50px 50px;
+            position: relative;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(45, 90, 39, 0.7), rgba(82, 164, 71, 0.5));
             border-radius: 0 0 50px 50px;
         }
         
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
         .feature-card {
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            border: none !important;
         }
         
         .feature-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2) !important;
+        }
+        
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .object-fit-cover {
+            object-fit: cover;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .stats-section {
+            background: linear-gradient(45deg, var(--light-green), white);
+            padding: 60px 0;
         }
         
         .status-badge {

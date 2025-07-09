@@ -5,39 +5,47 @@
 {% block title %}Login - CropCare{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card">
-                <div class="card-header text-center">
-                    <h3><i class="bi bi-box-arrow-in-right"></i> Welcome Back</h3>
-                    <p class="mb-0 text-muted">Sign in to your CropCare account</p>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-success btn-lg">
-                                <i class="bi bi-box-arrow-in-right"></i> Sign In
-                            </button>
+<div class="min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, rgba(45, 90, 39, 0.1), rgba(82, 164, 71, 0.1)), url('/lovable-uploads/b247ad4a-c6ac-4799-b9b8-9c5d44b48703.png'); background-size: cover; background-position: center;">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header text-center bg-white border-0 py-4">
+                        <div class="mb-3">
+                            <img src="/lovable-uploads/5b5377d9-8477-49ce-87cc-ff48f9541ec1.png" 
+                                 class="rounded-circle shadow" 
+                                 style="width: 80px; height: 80px; object-fit: cover;" 
+                                 alt="Welcome">
                         </div>
-                    </form>
-                    
-                    <hr class="my-4">
-                    
-                    <div class="text-center">
-                        <p class="mb-2">
-                            <a href="{% url 'accounts:password_reset_request' %}" class="text-decoration-none">
-                                Forgot your password?
-                            </a>
-                        </p>
-                        <p class="mb-0">
-                            Don't have an account? 
-                            <a href="{% url 'accounts:register' %}" class="text-decoration-none fw-bold">
-                                Sign up here
-                            </a>
-                        </p>
+                        <h3 class="fw-bold text-success"><i class="bi bi-leaf me-2"></i>Welcome Back</h3>
+                        <p class="mb-0 text-muted">Sign in to your CropCare account</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="text-center">
+                            <p class="mb-2">
+                                <a href="{% url 'accounts:password_reset_request' %}" class="text-decoration-none text-primary">
+                                    <i class="bi bi-key me-1"></i>Forgot your password?
+                                </a>
+                            </p>
+                            <p class="mb-0">
+                                Don't have an account? 
+                                <a href="{% url 'accounts:register' %}" class="text-decoration-none fw-bold text-success">
+                                    <i class="bi bi-person-plus me-1"></i>Sign up here
+                                </a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
