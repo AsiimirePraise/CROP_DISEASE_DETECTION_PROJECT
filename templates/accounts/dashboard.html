@@ -1,6 +1,6 @@
 
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}Dashboard - CropCare{% endblock %}
 
 {% block content %}
@@ -147,7 +147,7 @@
                             {% else %}
                                 <div class="text-center py-5">
                                     <div class="mb-4">
-                                        <img src="/lovable-uploads/9456b96f-5e91-4eda-8ada-562c1e1a8ad5.png" 
+                                        <img src="{% static 'images/plant-growth.png' %}" 
                                              class="rounded-circle shadow" 
                                              style="width: 120px; height: 120px; object-fit: cover;" 
                                              alt="Plant in hands">
@@ -175,7 +175,7 @@
                                          class="rounded-circle shadow border border-3 border-light" 
                                          width="100" height="100" style="object-fit: cover;">
                                 {% else %}
-                                    <img src="/lovable-uploads/5b5377d9-8477-49ce-87cc-ff48f9541ec1.png" 
+                                    <img src="{% static 'images/farmer-success.png' %}" 
                                          class="rounded-circle shadow border border-3 border-light" 
                                          width="100" height="100" style="object-fit: cover;" 
                                          alt="Default farmer profile">
