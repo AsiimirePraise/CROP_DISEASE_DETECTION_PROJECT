@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Diseases Database - CropCare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-bug"></i> Plant Diseases Database</h1>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get" class="d-flex">
+                <input type="text" name="search" class="form-control" placeholder="Search diseases..." value="{{ search_query|default:'' }}">
+                <button type="submit" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+        <div class="col-md-3">
+            <form method="get">
+                {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
+                <select name="severity" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Severities</option>
+                    {% for value, display in severity_choices %}
+                        <option value="{{ value }}" {% if severity_filter == value %}selected{% endif %}>{{ display }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <!-- Diseases Grid -->
+    {% if page_obj %}
+        <div class="row">
+            {% for disease in page_obj %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        {% if disease.image %}
+                            <img src="{{ disease.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="bi bi-bug text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ disease.name }}</h5>
+                            <p class="card-text">{{ disease.symptoms|truncatewords:15 }}</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-{% if disease.severity == 'low' %}success{% elif disease.severity == 'medium' %}warning{% else %}danger{% endif %}">
+                                        {{ disease.get_severity_display }}
+                                    </span>
+                                </div>
+                                <a href="{% url 'diagnosis:disease_detail' disease.id %}" class="btn btn-primary btn-sm w-100">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Diseases pagination">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if severity_filter %}&severity={{ severity_filter }}{% endif %}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if severity_filter %}&severity={{ severity_filter }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if severity_filter %}&severity={{ severity_filter }}{% endif %}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-bug text-muted" style="font-size: 5rem;"></i>
+            <h3 class="mt-3">No diseases found</h3>
+            <p class="text-muted">No diseases match your search criteria</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

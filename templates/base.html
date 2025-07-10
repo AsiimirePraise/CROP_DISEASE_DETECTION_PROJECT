@@ -1,66 +1,213 @@
-<!-- templates/base.html -->
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AgroDetect - Crop Disease Detection</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <title>{% block title %}Crop Disease Detector{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        /* Dark Green Navbar */
-        .navbar {
-            background-color: #1b5e20 !important; /* Dark green */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        :root {
+            --primary-green: #2d5a27;
+            --secondary-green: #52a447;
+            --light-green: #e8f5e8;
+            --accent-orange: #ff8c42;
+            --text-dark: #2c3e50;
+            --golden: #f4a531;
+            --earth-brown: #8b4513;
+            --sky-blue: #87ceeb;
+            --warm-beige: #f5f5dc;
         }
-
-        .navbar-brand, .navbar-nav .nav-link, .navbar-text {
-            color: #ffffff !important;
+        
+        body {
+            background: linear-gradient(135deg, var(--warm-beige) 0%, #f8f9fa 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
         }
-
-        .navbar-brand:hover, .navbar-nav .nav-link:hover {
-            color: #c8e6c9 !important; /* Light green on hover */
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-green) !important;
         }
-
-        .navbar-toggler {
-            border-color: #c8e6c9;
+        
+        .btn-primary {
+            background-color: var(--secondary-green);
+            border-color: var(--secondary-green);
         }
-
-        .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='m4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        
+        .btn-primary:hover {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
         }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        
+        .card-header {
+            background-color: var(--light-green);
+            border-bottom: 2px solid var(--secondary-green);
+            font-weight: 600;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-green);
+            min-height: 100vh;
+        }
+        
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: block;
+            border-radius: 8px;
+            margin: 5px 10px;
+        }
+        
+        .sidebar a:hover {
+            background-color: var(--secondary-green);
+            color: white;
+        }
+        
+        .alert-success {
+            background-color: var(--light-green);
+            border-color: var(--secondary-green);
+            color: var(--primary-green);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(45, 90, 39, 0.9), rgba(82, 164, 71, 0.8)), 
+                        url('{% static "images/background-farm.png" %}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            padding: 100px 0;
+            border-radius: 0 0 50px 50px;
+            position: relative;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(45, 90, 39, 0.7), rgba(82, 164, 71, 0.5));
+            border-radius: 0 0 50px 50px;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+            border: none !important;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2) !important;
+        }
+        
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .object-fit-cover {
+            object-fit: cover;
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        .stats-section {
+            background: linear-gradient(45deg, var(--light-green), white);
+            padding: 60px 0;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-processing { background-color: #cce5ff; color: #0066cc; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+        .status-failed { background-color: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        
-            <a class="navbar-brand" href="{% url 'dashboard' %}">
-                <img src="{% static 'images/logo3.jpg' %}" alt="AgroDetect Logo" style="width: 30px; height: 30px; margin-right: 10px;"> AgroDetect
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="bi bi-leaf"></i> CropCare
             </a>
             
-            {% if user.is_authenticated %}
-            <div class="navbar-nav ms-auto">
-                <span class="navbar-text me-3">
-                    Welcome, {{ user.username }} 
-                    ({% if user.profile.farmer %}Farmer{% elif user.profile.agronomist %}Agronomist{% elif user.profile.extension_worker %}Extension Worker{% endif %})
-                </span>
-                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Home</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:dashboard' %}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'diagnosis:list' %}">Diagnoses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'diagnosis:crops' %}">Crops</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'diagnosis:diseases' %}">Diseases</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> {{ user.first_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'analytics:dashboard' %}">Analytics</a></li>
+                                
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white ms-2 px-3" href="{% url 'accounts:register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
             </div>
-            {% else %}
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
-                <a class="nav-link" href="{% url 'register' %}">Register</a>
-            </div>
-            {% endif %}
-        
+        </div>
     </nav>
 
-    <!-- Display messages -->
+    <!-- Messages -->
     {% if messages %}
         <div class="container mt-3">
             {% for message in messages %}
@@ -72,10 +219,45 @@
         </div>
     {% endif %}
 
-    {% block content %}
-    {% endblock %}
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Footer -->
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-leaf"></i> CropCare</h5>
+                    <p>Advanced crop disease detection powered by AI</p>
+                </div>
+                <div class="col-md-3">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'diagnosis:crops' %}" class="text-light">Crops</a></li>
+                        <li><a href="{% url 'diagnosis:diseases' %}" class="text-light">Diseases</a></li>
+                        <li><a href="{% url 'recommendations:treatments' %}" class="text-light">Treatments</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>Support</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Help Center</a></li>
+                        <li><a href="#" class="text-light">Contact Us</a></li>
+                        <li><a href="#" class="text-light">Documentation</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <p>&copy; 2024 CropCare. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Rate Diagnosis - CropCare{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="bi bi-star"></i> Rate This Diagnosis</h4>
+                    <p class="mb-0 text-muted">Help us improve our disease detection accuracy</p>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6>Diagnosis Summary:</h6>
+                        <p><strong>Crop:</strong> {{ diagnosis.crop.name }}</p>
+                        <p><strong>Date:</strong> {{ diagnosis.created_at|date:"F d, Y" }}</p>
+                        <p><strong>Confidence:</strong> {{ result.confidence|floatformat:1 }}%</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-star-fill"></i> Submit Rating
+                            </button>
+                            <a href="{% url 'diagnosis:detail' diagnosis.id %}" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
