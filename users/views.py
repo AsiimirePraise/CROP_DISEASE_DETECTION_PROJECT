@@ -6,7 +6,6 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 
 
-
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -49,21 +48,22 @@ def home(request):
 def dashboard(request):
     """Main dashboard that redirects based on user role"""
     try:
-         # Ensure user has a profile
+        # Ensure user has a profile
         if hasattr(request.user, 'profile'):
             user_role = request.user.profile.get_user_role()
         
-        if user_role == 'farmer':
-              # Redirect to the diagnosis app's index view
+            if user_role == 'farmer':
+                # Redirect to the diagnosis app's index view
                 return redirect('diagnosis:index')
-        elif user_role == 'agronomist':
-            return render(request, 'dashboard/agronomist_dashboard.html', {'user_role': 'agronomist'})
-        elif user_role == 'extension_worker':
-            return render(request, 'dashboard/extension_worker_dashboard.html', {'user_role': 'extension_worker'})
-        else:
-            messages.error(request, "Please select your role in your profile.")
-            return redirect('profile')  # Redirect to profile page to set role
-            
+            elif user_role == 'agronomist':
+                # Redirect to the agronomist app's index view
+                return redirect('agronomist:index')  # Change 'agronomist:index' to your actual agronomist app URL name
+            elif user_role == 'extension_worker':
+                return render(request,'dashboard/dashboard.html', {'user_role': 'extension_worker'})
+            else:
+                messages.error(request, "Please select your role in your profile.")
+                return redirect('profile')  # Redirect to profile page to set role
+                
     except Profile.DoesNotExist:
         messages.error(request, "Please complete your profile setup.")
         return redirect('profile')  # Redirect to profile page

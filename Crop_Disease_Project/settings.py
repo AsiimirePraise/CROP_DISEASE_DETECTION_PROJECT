@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'users',
     'diagnosis',
     'agronomist_dashboard',
-    'user',
     'detector',
 ]
 
@@ -61,7 +60,7 @@ ROOT_URLCONF = 'Crop_Disease_Project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
