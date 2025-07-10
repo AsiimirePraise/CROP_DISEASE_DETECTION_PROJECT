@@ -1,0 +1,266 @@
+/* Agriculture Theme CSS - Updated Version */
+
+:root {
+    --primary-green: #2d5016;
+    --secondary-green: #4a7c20;
+    --light-green: #7cb342;
+    --accent-green: #8bc34a;
+    --pale-green: #f1f8e9;
+    --dark-text: #2e2e2e;
+    --light-text: #ffffff;
+    --gradient-bg: linear-gradient(135deg, #2d5016 0%, #4a7c20 100%);
+    --shadow: 0 4px 15px rgba(45, 80, 22, 0.1);
+    --border-radius: 12px;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    color: var(--dark-text);
+    background-color: #fafafa;
+    overflow-x: hidden;
+}
+
+/* Navbar Styles */
+.navbar-custom {
+    background: var(--gradient-bg);
+    padding: 1rem 0;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--light-text) !important;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: translateY(-2px);
+}
+
+.logo-img {
+    height: 40px; /* Responsive sizing */
+    width: auto;
+    transition: transform 0.3s ease;
+}
+.logo-img:hover {
+    transform: scale(1.05); /* Subtle hover effect */
+}
+.login-container {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: calc(100vh - 120px);
+    position: relative;
+    padding: 2rem 0;
+}
+
+.brand-text {
+    background: linear-gradient(45deg, #ffffff, #8bc34a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.nav-btn {
+    border-radius: 25px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-outline-light {
+    border-color: var(--light-text);
+    color: var(--light-text);
+}
+
+.btn-outline-light:hover {
+    background-color: var(--light-text);
+    color: var(--primary-green);
+}
+
+.btn-light {
+    background-color: var(--light-text);
+    color: var(--primary-green);
+    border: none;
+}
+
+.btn-light:hover {
+    background-color: var(--accent-green);
+    color: var(--light-text);
+}
+
+/* Hero Section */
+.hero-section {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    padding: 4rem 0;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 0;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subtitle {
+    font-weight: 400;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.section-title {
+    color: var(--primary-green);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    color: var(--secondary-green);
+    font-weight: 400;
+}
+
+/* Features Section */
+.features-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, var(--pale-green) 0%, #e8f5e8 100%);
+}
+
+.feature-card {
+    background: #e8f5e8;
+    padding: 2.5rem 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    border-top: 4px solid var(--accent-green);
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(45, 80, 22, 0.15);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.feature-card h4 {
+    color: var(--primary-green);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.feature-card p {
+    color: var(--secondary-green);
+    line-height: 1.6;
+}
+
+/* Footer */
+.footer-custom {
+    background: var(--gradient-bg);
+    color: white;
+    padding: 3rem 0 2rem;
+}
+
+.footer-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer-text {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0;
+}
+
+.footer-copyright {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: 50vh !important;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+    
+    .cta-buttons .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .feature-card {
+        margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .brand-text {
+        font-size: 1.2rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+}
