@@ -1,0 +1,227 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard - CropCare{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div class="sidebar">
+                <div class="p-3">
+                    <h5 class="text-white">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </h5>
+                </div>
+                <nav>
+                    <a href="{% url 'accounts:dashboard' %}">
+                        <i class="bi bi-house"></i> Overview
+                    </a>
+                    <a href="{% url 'diagnosis:list' %}">
+                        <i class="bi bi-camera"></i> My Diagnoses
+                    </a>
+                    <a href="{% url 'recommendations:list' %}">
+                        <i class="bi bi-clipboard-check"></i> Recommendations
+                    </a>
+                    <a href="{% url 'analytics:dashboard' %}">
+                        <i class="bi bi-graph-up"></i> Analytics
+                    </a>
+                    <a href="{% url 'accounts:profile' %}">
+                        <i class="bi bi-person"></i> Profile
+                    </a>
+                </nav>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <!-- Welcome Header -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">
+                    Welcome back, {{ user.first_name|default:user.username }}!
+                </h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{% url 'diagnosis:create' %}" class="btn btn-success">
+                        <i class="bi bi-camera"></i> New Diagnosis
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card dashboard-card border-0 shadow-lg bg-gradient-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="fw-bold">{{ dashboard_stats.total_diagnoses|default:"0" }}</h3>
+                                    <p class="card-text mb-0">Total Diagnoses</p>
+                                </div>
+                                <div class="stats-icon">
+                                    <i class="bi bi-camera-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card dashboard-card border-0 shadow-lg text-white" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="fw-bold">{{ dashboard_stats.successful_treatments|default:"0" }}</h3>
+                                    <p class="card-text mb-0">Successful Treatments</p>
+                                </div>
+                                <div class="stats-icon">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card dashboard-card border-0 shadow-lg text-white" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="fw-bold">{{ dashboard_stats.active_alerts|default:"0" }}</h3>
+                                    <p class="card-text mb-0">Active Alerts</p>
+                                </div>
+                                <div class="stats-icon">
+                                    <i class="bi bi-exclamation-triangle-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card dashboard-card border-0 shadow-lg text-white" style="background: linear-gradient(135deg, #17a2b8, #6f42c1);">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="fw-bold">{{ user_profile.farm_size|default:"N/A" }}</h3>
+                                    <p class="card-text mb-0">Farm Size (acres)</p>
+                                </div>
+                                <div class="stats-icon">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card dashboard-card border-0 shadow-lg">
+                        <div class="card-header bg-light border-0">
+                            <h5 class="mb-0"><i class="bi bi-clock-history text-primary"></i> Recent Diagnoses</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            {% if recent_diagnoses %}
+                                <div class="list-group list-group-flush">
+                                    {% for diagnosis in recent_diagnoses %}
+                                        <div class="list-group-item border-0 py-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
+                                                        <i class="bi bi-camera text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-1 fw-bold">{{ diagnosis.crop.name }}</h6>
+                                                        <p class="mb-0 text-muted small">{{ diagnosis.created_at|date:"M d, Y" }}</p>
+                                                    </div>
+                                                </div>
+                                                <span class="status-badge status-{{ diagnosis.status }}">
+                                                    {{ diagnosis.get_status_display }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <div class="mb-4">
+                                        <img src="{% static 'images/plant-growth.png' %}" 
+                                             class="rounded-circle shadow" 
+                                             style="width: 120px; height: 120px; object-fit: cover;" 
+                                             alt="Plant in hands">
+                                    </div>
+                                    <h5 class="mt-3 fw-bold">No diagnoses yet</h5>
+                                    <p class="text-muted mb-4">Upload your first crop image to get started with AI-powered disease detection</p>
+                                    <a href="{% url 'diagnosis:create' %}" class="btn btn-success btn-lg px-4">
+                                        <i class="bi bi-camera me-2"></i>Start First Diagnosis
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card dashboard-card border-0 shadow-lg">
+                        <div class="card-header bg-light border-0">
+                            <h5 class="mb-0"><i class="bi bi-person-circle text-primary"></i> Profile Summary</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="mb-4">
+                                {% if user_profile.profile_picture %}
+                                    <img src="{{ user_profile.profile_picture.url }}" 
+                                         class="rounded-circle shadow border border-3 border-light" 
+                                         width="100" height="100" style="object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'images/farmer-success.png' %}" 
+                                         class="rounded-circle shadow border border-3 border-light" 
+                                         width="100" height="100" style="object-fit: cover;" 
+                                         alt="Default farmer profile">
+                                {% endif %}
+                            </div>
+                            <h5 class="fw-bold">{{ user.get_full_name|default:user.username }}</h5>
+                            <p class="text-muted">{{ user_profile.get_user_type_display|default:"Farmer" }}</p>
+                            
+                            <div class="row text-center mb-4">
+                                <div class="col-6">
+                                    <div class="border-end">
+                                        <h6 class="fw-bold text-success">{{ dashboard_stats.total_diagnoses|default:"0" }}</h6>
+                                        <small class="text-muted">Diagnoses</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <h6 class="fw-bold text-primary">{{ dashboard_stats.successful_treatments|default:"0" }}</h6>
+                                    <small class="text-muted">Treatments</small>
+                                </div>
+                            </div>
+                            
+                            <div class="text-start small mb-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Location:</span>
+                                    <span class="fw-medium">{{ user_profile.location|default:"Not specified" }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted">Crops:</span>
+                                    <span class="fw-medium">{{ user_profile.crops_grown|default:"Various" }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-muted">Member since:</span>
+                                    <span class="fw-medium">{{ user.date_joined|date:"M Y" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <a href="{% url 'accounts:profile_update' %}" class="btn btn-outline-primary">
+                                    <i class="bi bi-pencil me-2"></i>Update Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
