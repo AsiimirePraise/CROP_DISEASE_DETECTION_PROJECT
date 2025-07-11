@@ -1,0 +1,308 @@
+:root {
+    --primary-green: #2d5016;
+    --secondary-green: #4a7c23;
+    --light-green: #8bc34a;
+    --accent-green: #689f38;
+    --background-green: #f1f8e9;
+    --text-dark: #1b5e20;
+    --text-light: #ffffff;
+    --border-green: #c8e6c9;
+    --hover-green: #558b2f;
+}
+
+body {
+    background: linear-gradient(135deg, var(--background-green) 0%, #e8f5e8 100%);
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    position: relative;
+}
+
+.logo-img {
+    height: 40px; /* Responsive sizing */
+    width: auto;
+    transition: transform 0.3s ease;
+}
+.logo-img:hover {
+    transform: scale(1.05); /* Subtle hover effect */
+}
+
+/* Agricultural background pattern */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/static/images/signup_pic.jpg');
+    background-size: cover;      
+    background-position: center; 
+    background-repeat: no-repeat; 
+    z-index: -1;               
+    opacity: 0.6;               
+}
+
+/* Navbar Styling */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%) !important;
+    box-shadow: 0 2px 10px rgba(45, 80, 22, 0.3);
+    border-bottom: 3px solid var(--accent-green);
+}
+
+.navbar-brand {
+    color: var(--text-light) !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar-brand img {
+    border-radius: 50%;
+    border: 2px solid var(--light-green);
+}
+
+.navbar .btn-light {
+    background-color: var(--light-green);
+    border-color: var(--light-green);
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.navbar .btn-light:hover {
+    background-color: var(--background-green);
+    border-color: var(--background-green);
+    color: var(--text-dark);
+}
+
+.navbar .btn-outline-light {
+    border-color: var(--light-green);
+    color: var(--light-green);
+    font-weight: 600;
+}
+
+.navbar .btn-outline-light:hover {
+    background-color: var(--light-green);
+    border-color: var(--light-green);
+    color: var(--text-dark);
+}
+
+/* Card Styling */
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid var(--border-green);
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(45, 80, 22, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--secondary-green) 0%, var(--accent-green) 100%);
+    border-bottom: 3px solid var(--light-green);
+    border-radius: 13px 13px 0 0 !important;
+    padding: 1.5rem;
+}
+
+.card-header h2 {
+    color: var(--text-light);
+    margin: 0;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Form Styling */
+.form-label {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 2px solid var(--border-green);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+.form-control:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 0.2rem rgba(139, 195, 74, 0.25);
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.form-control::placeholder {
+    color: #81c784;
+}
+
+/* Checkbox Styling */
+.form-check-input {
+    border: 2px solid var(--accent-green);
+    border-radius: 4px;
+}
+
+.form-check-input:checked {
+    background-color: var(--accent-green);
+    border-color: var(--accent-green);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(139, 195, 74, 0.25);
+}
+
+.form-check-label {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Button Styling */
+.btn-primary {
+    background: linear-gradient(135deg, var(--secondary-green) 0%, var(--accent-green) 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(45, 80, 22, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--hover-green) 0%, var(--secondary-green) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Alert Styling */
+.alert {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.alert-danger {
+    background-color: #ffebee;
+    color: #c62828;
+    border-left: 4px solid #c62828;
+}
+
+.alert-success {
+    background-color: #e8f5e9;
+    color: var(--text-dark);
+    border-left: 4px solid var(--accent-green);
+}
+
+.alert-info {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    border-left: 4px solid #1565c0;
+}
+
+.alert-warning {
+    background-color: #fff3e0;
+    color: #ef6c00;
+    border-left: 4px solid #ef6c00;
+}
+
+/* Error Messages */
+.text-danger {
+    color: #c62828 !important;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Links */
+a {
+    color: var(--accent-green);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--hover-green);
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%) !important;
+    color: var(--text-light) !important;
+    border-top: 3px solid var(--accent-green);
+    box-shadow: 0 -2px 10px rgba(45, 80, 22, 0.3);
+}
+
+/* Agricultural Icons/Decorations */
+.card::before {
+    content: '🌱';
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    font-size: 2rem;
+    background: var(--light-green);
+    padding: 5px 10px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-green);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    
+    .btn-primary {
+        padding: 0.625rem 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Focus states for accessibility */
+.form-control:focus,
+.btn:focus,
+.form-check-input:focus {
+    outline: none;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background-green);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-green);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--hover-green);
+}
