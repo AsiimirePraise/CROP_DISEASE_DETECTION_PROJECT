@@ -2,13 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Profile
+from django.db import connection, transaction
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()
     phone = forms.CharField(max_length=20)
     address = forms.CharField(widget=forms.Textarea)
     
-    # Replace the three BooleanFields with a single ChoiceField
     USER_ROLE_CHOICES = [
         ('farmer', 'I am a farmer'),
         ('agronomist', 'I am an agronomist'),
@@ -29,19 +29,33 @@ class UserRegisterForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
+        
         if commit:
-            user.save()
-            # Create or update the profile
-            profile, created = Profile.objects.get_or_create(user=user)
-            profile.phone = self.cleaned_data['phone']
-            profile.address = self.cleaned_data['address']
-            
-            # Set the selected role to True, others to False
-            profile.farmer = self.cleaned_data['user_role'] == 'farmer'
-            profile.agronomist = self.cleaned_data['user_role'] == 'agronomist'
-            profile.extension_worker = self.cleaned_data['user_role'] == 'extension_worker'
-            
-            profile.save()
+            # Use transaction.atomic() for proper transaction handling
+            with transaction.atomic():
+                user.save()
+                
+                # Use raw PostgreSQL query with proper transaction context
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        INSERT INTO users_profile (user_id, phone, address, farmer, agronomist, extension_worker)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (user_id) 
+                        DO UPDATE SET
+                            phone = EXCLUDED.phone,
+                            address = EXCLUDED.address,
+                            farmer = EXCLUDED.farmer,
+                            agronomist = EXCLUDED.agronomist,
+                            extension_worker = EXCLUDED.extension_worker
+                    """, [
+                        user.id,
+                        self.cleaned_data['phone'],
+                        self.cleaned_data['address'],
+                        self.cleaned_data['user_role'] == 'farmer',
+                        self.cleaned_data['user_role'] == 'agronomist',
+                        self.cleaned_data['user_role'] == 'extension_worker'
+                    ])
+                
         return user
 
 class UserUpdateForm(forms.ModelForm):
@@ -52,7 +66,6 @@ class UserUpdateForm(forms.ModelForm):
         fields = ['username', 'email']
 
 class ProfileUpdateForm(forms.ModelForm):
-    # Also update this form to use radio buttons for consistency
     USER_ROLE_CHOICES = [
         ('farmer', 'I am a farmer'),
         ('agronomist', 'I am an agronomist'),
@@ -75,8 +88,8 @@ class ProfileUpdateForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Set the initial value based on the current profile
         if self.instance and self.instance.pk:
+            # Use Django ORM for simplicity in form initialization
             if self.instance.farmer:
                 self.fields['user_role'].initial = 'farmer'
             elif self.instance.agronomist:
@@ -87,11 +100,26 @@ class ProfileUpdateForm(forms.ModelForm):
     def save(self, commit=True):
         profile = super().save(commit=False)
         
-        # Set the selected role to True, others to False
-        profile.farmer = self.cleaned_data['user_role'] == 'farmer'
-        profile.agronomist = self.cleaned_data['user_role'] == 'agronomist'
-        profile.extension_worker = self.cleaned_data['user_role'] == 'extension_worker'
-        
         if commit:
-            profile.save()
+            with transaction.atomic():
+                # Use raw PostgreSQL for the update
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                        UPDATE users_profile 
+                        SET 
+                            phone = %s,
+                            address = %s,
+                            farmer = %s,
+                            agronomist = %s,
+                            extension_worker = %s
+                        WHERE user_id = %s
+                    """, [
+                        self.cleaned_data['phone'],
+                        self.cleaned_data['address'],
+                        self.cleaned_data['user_role'] == 'farmer',
+                        self.cleaned_data['user_role'] == 'agronomist',
+                        self.cleaned_data['user_role'] == 'extension_worker',
+                        profile.user_id
+                    ])
+                
         return profile

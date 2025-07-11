@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Recommendation | Agricure{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/recommendations.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        Create New Recommendation
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" id="recommendationForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <h5 class="mb-3">Related Diagnosis</h5>
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ diagnosis.image.url }}" 
+                                             class="rounded me-3" width="80" height="80" 
+                                             style="object-fit: cover;" alt="Diagnosis image">
+                                        <div>
+                                            <h6>{{ diagnosis.result.disease }}</h6>
+                                            <p class="mb-0 text-muted">
+                                                {{ diagnosis.result.affected_part }} • 
+                                                {{ diagnosis.get_severity_display }} severity
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {{ form|crispy }}
+                        
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-save me-2"></i>Save Recommendation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize steps management
+    const stepsContainer = document.getElementById('steps-container');
+    const addStepBtn = document.getElementById('add-step');
+    let stepCount = document.querySelectorAll('.step-item').length || 1;
+    
+    addStepBtn.addEventListener('click', function() {
+        stepCount++;
+        const newStep = document.createElement('div');
+        newStep.className = 'step-item mb-3';
+        newStep.innerHTML = `
+            <div class="d-flex align-items-center mb-2">
+                <label class="form-label me-2 mb-0">Step ${stepCount}</label>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-step ms-auto">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <textarea name="steps" class="form-control" rows="2"></textarea>
+        `;
+        stepsContainer.appendChild(newStep);
+        
+        // Add event listener to new remove button
+        newStep.querySelector('.remove-step').addEventListener('click', function() {
+            stepsContainer.removeChild(newStep);
+            // Renumber remaining steps
+            const steps = stepsContainer.querySelectorAll('.step-item');
+            steps.forEach((step, index) => {
+                step.querySelector('.form-label').textContent = `Step ${index + 1}`;
+            });
+            stepCount = steps.length;
+        });
+    });
+    
+    // Handle form submission
+    document.getElementById('recommendationForm').addEventListener('submit', function() {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...';
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,816 @@
+{% extends 'base.html' %}
+{%load static%}
+{% block content %}
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-seedling"></i>AgroDetect
+        </a>
+        <div class="navbar-nav ms-auto">
+            <span class="navbar-text me-3">
+                Welcome, <strong>{{ user.first_name|default:user.username }}</strong>
+            </span>
+        </div>
+    </div>
+</nav>
+
+<!-- Sidebar -->
+<nav class="sidebar">
+    <ul class="nav flex-column">
+        <li class="nav-item">
+            <a class="nav-link active" href="#dashboard" onclick="showSection('dashboard')">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#diagnosis" onclick="showSection('diagnosis')">
+                <i class="fas fa-microscope"></i> Field Diagnosis
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#farmers" onclick="showSection('farmers')">
+                <i class="fas fa-users"></i> Farmer Management
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#cases" onclick="showSection('cases')">
+                <i class="fas fa-clipboard-list"></i> Field Cases
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#recommendations" onclick="showSection('recommendations')">
+                <i class="fas fa-prescription-bottle"></i> Treatment Plans
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#education" onclick="showSection('education')">
+                <i class="fas fa-chalkboard-teacher"></i> Farmer Education
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#reports" onclick="showSection('reports')">
+                <i class="fas fa-file-alt"></i> Field Reports
+            </a>
+        </li>
+        <hr style="border-color: rgba(255,255,255,0.2);">
+        <li class="menu-item logout">
+            <a href="{% url 'logout' %}" class="menu-link">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="content-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-user-tie"></i> Extension Worker Dashboard</h2>
+            
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number" style="color: #27ae60;">{{ farmer_count }}</div>
+                    <div class="stats-label">Farmers Supported</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number" style="color: #2ecc71;">{{ active_cases }}</div>
+                    <div class="stats-label">Active Cases</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number" style="color: #16a085;">{{ pending_visits }}</div>
+                    <div class="stats-label">Pending Visits</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card text-center">
+                    <div class="stats-number" style="color: #1abc9c;">{{ training_sessions }}</div>
+                    <div class="stats-label">Training Sessions</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="chart-container">
+                    <h5><i class="fas fa-map-marked-alt"></i> Field Visit Activity</h5>
+                    <canvas id="visitChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-pie"></i> Common Issues</h5>
+                    <canvas id="issueChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activities -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5><i class="fas fa-calendar-check"></i> Upcoming Visits</h5>
+                    <div class="visit-item">
+                        <div class="visit-date">Jul 15</div>
+                        <div class="visit-details">
+                            <strong>John Mugisha</strong><br>
+                            <small>Maize field inspection</small>
+                        </div>
+                    </div>
+                    <div class="visit-item">
+                        <div class="visit-date">Jul 17</div>
+                        <div class="visit-details">
+                            <strong>Mary Nakato</strong><br>
+                            <small>Beans rust treatment follow-up</small>
+                        </div>
+                    </div>
+                    <div class="visit-item">
+                        <div class="visit-date">Jul 19</div>
+                        <div class="visit-details">
+                            <strong>Community Training</strong><br>
+                            <small>Pest management techniques</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5><i class="fas fa-bullhorn"></i> Recent Announcements</h5>
+                    <div class="announcement">
+                        <strong>New Government Subsidy</strong>
+                        <p>Register farmers for fertilizer subsidy program by July 20th</p>
+                        <small class="text-muted">Posted 2 days ago</small>
+                    </div>
+                    <div class="announcement">
+                        <strong>Weather Advisory</strong>
+                        <p>Heavy rains expected next week - advise farmers on water management</p>
+                        <small class="text-muted">Posted 5 days ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Field Diagnosis Section -->
+    <div id="diagnosis" class="content-section" style="display: none;">
+        <h3><i class="fas fa-microscope"></i> Field Diagnosis</h3>
+        <div class="chart-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="farmerSelect" class="form-label">Select Farmer</label>
+                        <select class="form-select" id="farmerSelect">
+                            <option value="">Select farmer</option>
+                            <option value="1">John Mugisha</option>
+                            <option value="2">Mary Nakato</option>
+                            <option value="3">Robert Kato</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imageUpload" class="form-label">Upload Field Image</label>
+                        <input type="file" class="form-control" id="imageUpload" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cropType" class="form-label">Crop Type</label>
+                        <select class="form-select" id="cropType">
+                            <option value="">Select crop type</option>
+                            <option value="maize">Maize</option>
+                            <option value="beans">Beans</option>
+                            <option value="coffee">Coffee</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fieldNotes" class="form-label">Field Observations</label>
+                        <textarea class="form-control" id="fieldNotes" rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-custom" onclick="diagnoseField()">
+                        <i class="fas fa-search"></i> Submit Diagnosis
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <div id="diagnosisResult" class="border rounded p-3" style="min-height: 200px; background: #f8f9fa;">
+                        <p class="text-muted text-center mt-5">Submit field data to get diagnosis results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Farmer Management Section -->
+    <div id="farmers" class="content-section" style="display: none;">
+        <h3><i class="fas fa-users"></i> Farmer Management</h3>
+        <div class="chart-container">
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <button class="btn btn-custom me-2">
+                        <i class="fas fa-plus"></i> Add New Farmer
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="fas fa-download"></i> Export List
+                    </button>
+                </div>
+                <div class="w-25">
+                    <input type="text" class="form-control" placeholder="Search farmers...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Farmer ID</th>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Crops</th>
+                            <th>Last Visit</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>F001</td>
+                            <td>John Mugisha</td>
+                            <td>Central Region</td>
+                            <td>Maize, Beans</td>
+                            <td>2025-07-10</td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-custom">View</button>
+                                <button class="btn btn-sm btn-outline-success">Schedule Visit</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>F002</td>
+                            <td>Mary Nakato</td>
+                            <td>Eastern Region</td>
+                            <td>Beans, Coffee</td>
+                            <td>2025-07-05</td>
+                            <td><span class="badge bg-warning">Needs Follow-up</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-custom">View</button>
+                                <button class="btn btn-sm btn-outline-success">Schedule Visit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Field Cases Section -->
+    <div id="cases" class="content-section" style="display: none;">
+        <h3><i class="fas fa-clipboard-list"></i> Field Cases</h3>
+        <div class="chart-container">
+            <div class="d-flex justify-content-between mb-3">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-custom active">All Cases</button>
+                    <button type="button" class="btn btn-outline-success">Open</button>
+                    <button type="button" class="btn btn-outline-success">Resolved</button>
+                </div>
+                <div class="w-25">
+                    <input type="text" class="form-control" placeholder="Search cases...">
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Case ID</th>
+                            <th>Farmer</th>
+                            <th>Crop</th>
+                            <th>Issue</th>
+                            <th>Date Reported</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>C001</td>
+                            <td>John Mugisha</td>
+                            <td>Maize</td>
+                            <td>Leaf Blight</td>
+                            <td>2025-07-10</td>
+                            <td><span class="badge bg-warning">In Progress</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-custom">Update</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>C002</td>
+                            <td>Mary Nakato</td>
+                            <td>Beans</td>
+                            <td>Rust</td>
+                            <td>2025-07-09</td>
+                            <td><span class="badge bg-success">Resolved</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-custom">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Treatment Plans Section -->
+    <div id="recommendations" class="content-section" style="display: none;">
+        <h3><i class="fas fa-prescription-bottle"></i> Treatment Plans</h3>
+        <div class="chart-container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="treatment-card">
+                        <h5>Leaf Blight</h5>
+                        <p><strong>Crop:</strong> Maize</p>
+                        <p><strong>Recommended:</strong> Fungicide application every 7 days</p>
+                        <button class="btn btn-sm btn-custom mt-2">View Details</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="treatment-card">
+                        <h5>Bean Rust</h5>
+                        <p><strong>Crop:</strong> Beans</p>
+                        <p><strong>Recommended:</strong> Remove infected plants, apply sulfur spray</p>
+                        <button class="btn btn-sm btn-custom mt-2">View Details</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="treatment-card">
+                        <h5>Powdery Mildew</h5>
+                        <p><strong>Crop:</strong> Various</p>
+                        <p><strong>Recommended:</strong> Baking soda solution (1 tbsp per gallon)</p>
+                        <button class="btn btn-sm btn-custom mt-2">View Details</button>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <button class="btn btn-custom">
+                    <i class="fas fa-plus"></i> Create Custom Treatment Plan
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Farmer Education Section -->
+    <div id="education" class="content-section" style="display: none;">
+        <h3><i class="fas fa-chalkboard-teacher"></i> Farmer Education</h3>
+        <div class="chart-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="education-card">
+                        <h5><i class="fas fa-calendar-alt"></i> Schedule Training</h5>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Training Topic</label>
+                                <input type="text" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Date</label>
+                                <input type="date" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Location</label>
+                                <input type="text" class="form-control">
+                            </div>
+                            <button class="btn btn-custom">Schedule Training</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="education-card">
+                        <h5><i class="fas fa-book"></i> Training Materials</h5>
+                        <div class="material-item">
+                            <i class="fas fa-file-pdf text-success"></i>
+                            <span>Pest Management Guide</span>
+                            <button class="btn btn-sm btn-outline-success">Download</button>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-file-video text-success"></i>
+                            <span>Proper Fertilizer Application</span>
+                            <button class="btn btn-sm btn-outline-success">View</button>
+                        </div>
+                        <div class="material-item">
+                            <i class="fas fa-file-image text-success"></i>
+                            <span>Disease Identification Charts</span>
+                            <button class="btn btn-sm btn-outline-success">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Field Reports Section -->
+    <div id="reports" class="content-section" style="display: none;">
+        <h3><i class="fas fa-file-alt"></i> Field Reports</h3>
+        <div class="chart-container">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="report-option text-center p-4">
+                        <i class="fas fa-file-alt fa-3x mb-3 text-success"></i>
+                        <h5>Monthly Activity Report</h5>
+                        <p>Generate summary of your monthly activities</p>
+                        <button class="btn btn-custom">Generate</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="report-option text-center p-4">
+                        <i class="fas fa-map-marked-alt fa-3x mb-3 text-success"></i>
+                        <h5>Regional Issues Report</h5>
+                        <p>Common problems in your region</p>
+                        <button class="btn btn-custom">Generate</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="report-option text-center p-4">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-success"></i>
+                        <h5>Performance Metrics</h5>
+                        <p>Your extension work statistics</p>
+                        <button class="btn btn-custom">Generate</button>
+                    </div>
+                </div>
+            </div>
+            
+            <h5 class="mt-4"><i class="fas fa-history"></i> Recent Reports</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Report Name</th>
+                            <th>Date Generated</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>June 2025 Activity Report</td>
+                            <td>2025-07-01</td>
+                            <td>
+                                <button class="btn btn-sm btn-custom">View</button>
+                                <button class="btn btn-sm btn-outline-success">Download</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Central Region Issues Summary</td>
+                            <td>2025-06-15</td>
+                            <td>
+                                <button class="btn btn-sm btn-custom">View</button>
+                                <button class="btn btn-sm btn-outline-success">Download</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<style>
+    :root {
+        --primary-green: #27ae60;
+        --dark-green: #16a085;
+        --light-green: #2ecc71;
+        --lighter-green: #1abc9c;
+        --sidebar-green: #2c3e50;
+        --highlight-green: #3498db;
+    }
+    
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 250px;
+        background-color: #2d5016;;
+        padding-top: 60px;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        margin-top:30px;
+    }
+    
+    .sidebar .nav-link {
+        color: #ecf0f1;
+        padding: 15px 20px;
+        border-radius: 0;
+        margin: 5px 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .sidebar .nav-link:hover, .sidebar .nav-link.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        transform: translateX(5px);
+    }
+    
+    .sidebar .nav-link i {
+        margin-right: 10px;
+        width: 20px;
+    }
+    
+    .main-content {
+        margin-left: 250px;
+        padding: 20px;
+        background: #f8f9fa;
+        min-height: 100vh;
+    }
+    
+    .navbar-brand {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color:darkgreen;
+        color: white;
+        padding: 15px 20px;
+        width: 250px;
+        z-index: 1001;
+        text-decoration: none;
+    }
+    
+    .navbar-brand:hover {
+        color: white;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+        border-top: 4px solid var(--primary-green);
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+    
+    .stats-label {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        border-left: 4px solid var(--light-green);
+    }
+    
+    .visit-item {
+        display: flex;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+        align-items: center;
+    }
+    
+    .visit-date {
+        background: var(--primary-green);
+        color: white;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        font-weight: bold;
+    }
+    
+    .announcement {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .announcement:last-child {
+        border-bottom: none;
+    }
+    
+    .treatment-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        height: 100%;
+        border-top: 3px solid var(--lighter-green);
+    }
+    
+    .education-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        height: 100%;
+        border-left: 3px solid var(--dark-green);
+    }
+    
+    .material-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .material-item i {
+        margin-right: 10px;
+        width: 20px;
+    }
+    
+    .material-item span {
+        flex-grow: 1;
+    }
+    
+    .report-option {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        border-top: 3px solid var(--light-green);
+    }
+    
+    .report-option:hover {
+        transform: translateY(-5px);
+    }
+    
+    .btn-custom {
+        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-custom:hover {
+        background: linear-gradient(135deg, var(--light-green), var(--lighter-green));
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn-outline-success {
+        border-color: var(--primary-green);
+        color: var(--primary-green);
+    }
+    
+    .btn-outline-success:hover {
+        background-color: var(--primary-green);
+        color: white;
+    }
+    
+    .badge.bg-success {
+        background-color: var(--primary-green) !important;
+    }
+    
+    .badge.bg-warning {
+        background-color: #f39c12 !important;
+    }
+</style>
+
+<script>
+    // Navigation function
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Remove active class from all nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Show selected section
+        document.getElementById(sectionId).style.display = 'block';
+        
+        // Add active class to clicked nav link
+        event.target.classList.add('active');
+    }
+    
+    // Chart initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        // Field Visit Chart
+        const visitCtx = document.getElementById('visitChart').getContext('2d');
+        new Chart(visitCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                datasets: [{
+                    label: 'Field Visits',
+                    data: [12, 15, 18, 20, 16, 19, 8],
+                    backgroundColor: '#27ae60'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Common Issues Chart
+        const issueCtx = document.getElementById('issueChart').getContext('2d');
+        new Chart(issueCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pests', 'Diseases', 'Soil Issues', 'Other'],
+                datasets: [{
+                    data: [35, 25, 20, 20],
+                    backgroundColor: ['#27ae60', '#2ecc71', '#16a085', '#1abc9c']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    });
+    
+    // Field diagnosis function
+    function diagnoseField() {
+        const farmerSelect = document.getElementById('farmerSelect');
+        const fileInput = document.getElementById('imageUpload');
+        const cropType = document.getElementById('cropType').value;
+        const fieldNotes = document.getElementById('fieldNotes').value;
+        const resultDiv = document.getElementById('diagnosisResult');
+        
+        if (!farmerSelect.value) {
+            alert('Please select a farmer');
+            return;
+        }
+        
+        if (!fileInput.files[0]) {
+            alert('Please upload a field image');
+            return;
+        }
+        
+        if (!cropType) {
+            alert('Please select a crop type');
+            return;
+        }
+        
+        if (!fieldNotes) {
+            alert('Please enter your field observations');
+            return;
+        }
+        
+        // Simulate diagnosis process
+        resultDiv.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Processing...</span>
+                </div>
+                <p class="mt-2">Analyzing field data...</p>
+            </div>
+        `;
+        
+        setTimeout(() => {
+            resultDiv.innerHTML = `
+                <h5><i class="fas fa-check-circle text-success"></i> Field Diagnosis Complete</h5>
+                <hr>
+                <p><strong>Farmer:</strong> ${farmerSelect.options[farmerSelect.selectedIndex].text}</p>
+                <p><strong>Crop:</strong> ${cropType}</p>
+                <p><strong>Issue:</strong> Leaf Blight</p>
+                <p><strong>Severity:</strong> <span class="badge bg-warning">Medium</span></p>
+                <p><strong>Recommended Action:</strong> Apply fungicide treatment and remove severely infected leaves</p>
+                <div class="d-flex justify-content-between mt-3">
+                    <button class="btn btn-custom btn-sm">
+                        <i class="fas fa-save"></i> Save Report
+                    </button>
+                    <button class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-print"></i> Print for Farmer
+                    </button>
+                </div>
+            `;
+        }, 2000);
+    }
+</script>
+{% endblock %}

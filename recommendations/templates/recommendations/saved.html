@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Saved Recommendations | Agricure{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/recommendations.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-bookmark me-2"></i>Saved Recommendations
+                </h2>
+                <a href="{% url 'recommendations:index' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-clipboard-list me-2"></i>All Recommendations
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% if recommendations %}
+        {% for saved in recommendations %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                    <h5 class="mb-0">{{ saved.recommendation.title }}</h5>
+                    <small class="text-muted">
+                        Saved on {{ saved.saved_at|date:"M d, Y" }}
+                    </small>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ saved.recommendation.description|truncatewords:25 }}</p>
+                    
+                    {% if saved.notes %}
+                    <div class="notes-section mt-3 p-3 bg-light rounded">
+                        <h6 class="mb-2"><i class="fas fa-sticky-note me-2"></i>Your Notes</h6>
+                        <p class="mb-0">{{ saved.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent d-flex justify-content-between">
+                    <a href="{% url 'recommendations:detail' saved.recommendation.id %}" 
+                       class="btn btn-sm btn-outline-primary">
+                        View Details
+                    </a>
+                    <form method="POST" action="{% url 'recommendations:unsave' saved.id %}" class="d-inline-block">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash-alt me-1"></i>Remove
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-bookmark fa-4x text-muted mb-4"></i>
+                    <h4 class="text-muted">No saved recommendations</h4>
+                    <p class="text-muted">
+                        Save recommendations from disease diagnoses for easy access
+                    </p>
+                    <a href="{% url 'recommendations:index' %}" class="btn btn-primary mt-3">
+                        <i class="fas fa-clipboard-list me-2"></i>Browse Recommendations
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ recommendation.title }} | Agricure{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'css/recommendations.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">{{ recommendation.title }}</h3>
+                        {% if is_saved %}
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-bookmark text-success me-1"></i>Saved
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="recommendation-meta mb-4">
+                        <div class="d-flex flex-wrap justify-content-between">
+                            <div class="mb-2">
+                                <i class="fas fa-user me-2"></i>
+                                <strong>Created by:</strong> {{ recommendation.created_by.get_full_name|default:recommendation.created_by.username }}
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-calendar me-2"></i>
+                                <strong>Date:</strong> {{ recommendation.created_at|date:"M d, Y" }}
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>Status:</strong> 
+                                <span class="badge {% if recommendation.is_approved %}bg-success{% else %}bg-warning{% endif %}">
+                                    {% if recommendation.is_approved %}Approved{% else %}Pending Approval{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-description mb-4">
+                        <h5 class="mb-3">Description</h5>
+                        <p>{{ recommendation.description }}</p>
+                    </div>
+                    
+                    <div class="recommendation-steps mb-4">
+                        <h5 class="mb-3">Treatment Steps</h5>
+                        <div class="steps-container">
+                            {% for step in recommendation.steps %}
+                            <div class="step-card mb-3">
+                                <div class="step-header d-flex align-items-center">
+                                    <div class="step-number me-3">
+                                        {{ forloop.counter }}
+                                    </div>
+                                    <h6 class="mb-0">Step {{ forloop.counter }}</h6>
+                                </div>
+                                <div class="step-body mt-2">
+                                    <p class="mb-0">{{ step }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {% if recommendation.diagnosis %}
+                    <div class="related-diagnosis mb-4">
+                        <h5 class="mb-3">Related Diagnosis</h5>
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ recommendation.diagnosis.image.url }}" 
+                                         class="rounded me-3" width="80" height="80" 
+                                         style="object-fit: cover;" alt="Diagnosis image">
+                                    <div>
+                                        <h6>{{ recommendation.diagnosis.result.disease }}</h6>
+                                        <p class="mb-0 text-muted small">
+                                            {{ recommendation.diagnosis.result.affected_part }} • 
+                                            {{ recommendation.diagnosis.get_severity_display }} severity
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'recommendations:index' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                        <div>
+                            {% if not is_saved and request.user.is_farmer %}
+                            <form method="POST" action="{% url 'recommendations:save' recommendation.id %}" 
+                                  class="d-inline-block me-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-bookmark me-2"></i>Save
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            {% if can_edit %}
+                            <a href="#" class="btn btn-primary me-2">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </a>
+                            {% endif %}
+                            
+                            <a href="#" class="btn btn-outline-primary">
+                                <i class="fas fa-share-alt me-2"></i>Share
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

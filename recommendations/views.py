@@ -1,137 +1,86 @@
-
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator
-from django.db.models import Q
-from .models import Recommendation, Treatment, TreatmentTracking, PreventiveMeasure
-
-
-@login_required
-def recommendation_list_view(request):
-    # Get recommendations for user's diagnoses
-    recommendations = Recommendation.objects.filter(
-        diagnosis_result__diagnosis_request__user=request.user
-    ).select_related('diagnosis_result__diagnosis_request')
-    
-    paginator = Paginator(recommendations, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    return render(request, 'recommendations/list.html', {'page_obj': page_obj})
-
+from django.contrib import messages
+from diagnosis.models import Diagnosis
+from .models import Recommendation, SavedRecommendation
+from .forms import RecommendationForm
 
 @login_required
-def recommendation_detail_view(request, recommendation_id):
-    recommendation = get_object_or_404(
-        Recommendation,
-        id=recommendation_id,
-        diagnosis_result__diagnosis_request__user=request.user
-    )
-    
-    treatment_recommendations = recommendation.treatmentrecommendation_set.all()
-    
-    context = {
-        'recommendation': recommendation,
-        'treatment_recommendations': treatment_recommendations,
-    }
-    
-    return render(request, 'recommendations/detail.html', context)
-
+def index(request):
+    if request.user.is_farmer:
+        saved_recs = SavedRecommendation.objects.filter(user=request.user).select_related('recommendation')
+        return render(request, 'recommendations/index.html', {
+            'recommendations': saved_recs,
+            'is_farmer': True
+        })
+    else:
+        recommendations = Recommendation.objects.filter(is_approved=True)
+        return render(request, 'recommendations/index.html', {
+            'recommendations': recommendations,
+            'is_farmer': False
+        })
 
 @login_required
-def treatment_tracking_view(request, recommendation_id):
-    recommendation = get_object_or_404(
-        Recommendation,
-        id=recommendation_id,
-        diagnosis_result__diagnosis_request__user=request.user
-    )
+def create_recommendation(request, diagnosis_id):
+    diagnosis = get_object_or_404(Diagnosis, id=diagnosis_id)
     
-    tracking_records = TreatmentTracking.objects.filter(
+    if request.method == 'POST':
+        form = RecommendationForm(request.POST)
+        if form.is_valid():
+            recommendation = form.save(commit=False)
+            recommendation.diagnosis = diagnosis
+            recommendation.created_by = request.user
+            recommendation.is_approved = not request.user.is_farmer
+            recommendation.save()
+            
+            messages.success(request, 'Recommendation created successfully!')
+            return redirect('recommendations:detail', recommendation.id)
+    else:
+        initial_data = {
+            'title': f"Treatment for {diagnosis.result['disease']}",
+            'description': f"Recommended treatment plan for {diagnosis.result['disease']} detected in {diagnosis.result['affected_part']}",
+            'steps': diagnosis.result['recommendations']
+        }
+        form = RecommendationForm(initial=initial_data)
+    
+    return render(request, 'recommendations/create.html', {
+        'form': form,
+        'diagnosis': diagnosis
+    })
+
+@login_required
+def recommendation_detail(request, recommendation_id):
+    recommendation = get_object_or_404(Recommendation, id=recommendation_id)
+    is_saved = SavedRecommendation.objects.filter(
         user=request.user,
         recommendation=recommendation
-    )
+    ).exists()
     
-    context = {
+    return render(request, 'recommendations/detail.html', {
         'recommendation': recommendation,
-        'tracking_records': tracking_records,
-    }
-    
-    return render(request, 'recommendations/tracking.html', context)
+        'is_saved': is_saved,
+        'can_edit': request.user == recommendation.created_by or request.user.is_admin
+    })
 
-
-def treatment_list_view(request):
-    treatments = Treatment.objects.all()
+@login_required
+def save_recommendation(request, recommendation_id):
+    recommendation = get_object_or_404(Recommendation, id=recommendation_id)
     
-    search_query = request.GET.get('search')
-    treatment_type = request.GET.get('type')
-    organic_only = request.GET.get('organic')
-    
-    if search_query:
-        treatments = treatments.filter(
-            Q(name__icontains=search_query) |
-            Q(active_ingredients__icontains=search_query)
+    if request.method == 'POST':
+        _, created = SavedRecommendation.objects.get_or_create(
+            user=request.user,
+            recommendation=recommendation,
+            defaults={'notes': request.POST.get('notes', '')}
         )
+        
+        if created:
+            messages.success(request, 'Recommendation saved to your account!')
+        else:
+            messages.info(request, 'You already saved this recommendation')
     
-    if treatment_type:
-        treatments = treatments.filter(treatment_type=treatment_type)
-    
-    if organic_only:
-        treatments = treatments.filter(organic_friendly=True)
-    
-    paginator = Paginator(treatments, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'page_obj': page_obj,
-        'search_query': search_query,
-        'treatment_type': treatment_type,
-        'organic_only': organic_only,
-        'treatment_types': Treatment.TREATMENT_TYPES,
-    }
-    
-    return render(request, 'recommendations/treatments.html', context)
+    return redirect('recommendations:detail', recommendation_id)
 
-
-def treatment_detail_view(request, treatment_id):
-    treatment = get_object_or_404(Treatment, id=treatment_id)
-    
-    context = {
-        'treatment': treatment,
-        'related_diseases': treatment.diseases.all(),
-    }
-    
-    return render(request, 'recommendations/treatment_detail.html', context)
-
-
-def preventive_measures_view(request):
-    measures = PreventiveMeasure.objects.all()
-    
-    search_query = request.GET.get('search')
-    cost_filter = request.GET.get('cost')
-    difficulty_filter = request.GET.get('difficulty')
-    
-    if search_query:
-        measures = measures.filter(
-            Q(name__icontains=search_query) |
-            Q(description__icontains=search_query)
-        )
-    
-    if cost_filter:
-        measures = measures.filter(implementation_cost=cost_filter)
-    
-    if difficulty_filter:
-        measures = measures.filter(difficulty_level=difficulty_filter)
-    
-    paginator = Paginator(measures, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'page_obj': page_obj,
-        'search_query': search_query,
-        'cost_filter': cost_filter,
-        'difficulty_filter': difficulty_filter,
-    }
-    
-    return render(request, 'recommendations/preventive.html', context)
+@login_required
+def saved_recommendations(request):
+    saved_recs = SavedRecommendation.objects.filter(user=request.user).select_related('recommendation')
+    return render(request, 'recommendations/saved.html', {'recommendations': saved_recs})
