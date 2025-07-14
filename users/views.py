@@ -4,6 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
+from django.contrib.auth.models import User
+from diagnosis.models import DiagnosisRequest
+from recommendations.models import Recommendation
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 def register(request):
@@ -62,7 +68,31 @@ def dashboard(request):
         elif user_role == 'agronomist':
             return render(request, 'dashboard/agronomist_dashboard.html', {'user_role': 'agronomist'})
         elif user_role == 'extension_worker':
-            return render(request, 'dashboard/extension_worker_dashboard.html', {'user_role': 'extension_worker'})
+                farmers = User.objects.filter(profile__farmer=True)
+                # Total number of farmers
+                farmer_count = User.objects.filter(profile__farmer=True).count()
+
+                # Active cases: maybe diagnosis entries with an "active" status
+                active_cases = DiagnosisRequest.objects.all().count()
+
+                # Pending visits or treatment recommendations
+                pending_visits = Recommendation.objects.all().count()
+
+                if request.method == 'POST':
+                    farmer_id = request.POST.get('farmer')
+                    if farmer_id:
+                        try:
+                            farmer = User.objects.get(id=farmer_id)
+                        except User.DoesNotExist:
+                            messages.error(request, "Farmer not found.")
+
+                return render(request, 'dashboard/extension_worker_dashboard.html', {
+                    'farmers': farmers,
+                    'farmer_count': farmer_count,
+                    'active_cases': active_cases,
+                    'pending_visits': pending_visits,
+                    'user_role': 'extension_worker'
+                })
         else:
             messages.error(request, "Please select your role in your profile.")
             return redirect('profile')  # Redirect to profile page to set role
