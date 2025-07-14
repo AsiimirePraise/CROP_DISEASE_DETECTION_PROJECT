@@ -48,11 +48,6 @@
                 <i class="fas fa-chalkboard-teacher"></i> Farmer Education
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#reports" onclick="showSection('reports')">
-                <i class="fas fa-file-alt"></i> Field Reports
-            </a>
-        </li>
         <hr style="border-color: rgba(255,255,255,0.2);">
         <li class="menu-item logout">
             <a href="{% url 'logout' %}" class="menu-link">
@@ -95,7 +90,7 @@
             <div class="col-md-3">
                 <div class="stats-card text-center">
                     <div class="stats-number" style="color: #1abc9c;">{{ training_sessions }}</div>
-                    <div class="stats-label">Training Sessions</div>
+                    <div class="stats-label">recommendations</div>
                 </div>
             </div>
         </div>
@@ -163,19 +158,21 @@
     </div>
     
     <!-- Field Diagnosis Section -->
+    <form method="POST">
+        {% csrf_token %}
     <div id="diagnosis" class="content-section" style="display: none;">
         <h3><i class="fas fa-microscope"></i> Field Diagnosis</h3>
         <div class="chart-container">
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="farmerSelect" class="form-label">Select Farmer</label>
-                        <select class="form-select" id="farmerSelect">
-                            <option value="">Select farmer</option>
-                            <option value="1">John Mugisha</option>
-                            <option value="2">Mary Nakato</option>
-                            <option value="3">Robert Kato</option>
-                        </select>
+                       <label for="farmerSelect" class="form-label">Select Farmer</label>
+                         <select class="form-select" id="farmerSelect" name="farmer">
+                             <option value="">Select farmer</option>
+                               {% for farmer in farmers %}
+                           <option value="{{ farmer.id }}">{{ farmer.get_full_name|default:farmer.username }}</option>
+                                {% endfor %}
+                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="imageUpload" class="form-label">Upload Field Image</label>
@@ -227,98 +224,27 @@
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
-                        <tr>
-                            <th>Farmer ID</th>
-                            <th>Name</th>
-                            <th>Location</th>
-                            <th>Crops</th>
-                            <th>Last Visit</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>F001</td>
-                            <td>John Mugisha</td>
-                            <td>Central Region</td>
-                            <td>Maize, Beans</td>
-                            <td>2025-07-10</td>
-                            <td><span class="badge bg-success">Active</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-custom">View</button>
-                                <button class="btn btn-sm btn-outline-success">Schedule Visit</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>F002</td>
-                            <td>Mary Nakato</td>
-                            <td>Eastern Region</td>
-                            <td>Beans, Coffee</td>
-                            <td>2025-07-05</td>
-                            <td><span class="badge bg-warning">Needs Follow-up</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-custom">View</button>
-                                <button class="btn btn-sm btn-outline-success">Schedule Visit</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Field Cases Section -->
-    <div id="cases" class="content-section" style="display: none;">
-        <h3><i class="fas fa-clipboard-list"></i> Field Cases</h3>
-        <div class="chart-container">
-            <div class="d-flex justify-content-between mb-3">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-custom active">All Cases</button>
-                    <button type="button" class="btn btn-outline-success">Open</button>
-                    <button type="button" class="btn btn-outline-success">Resolved</button>
-                </div>
-                <div class="w-25">
-                    <input type="text" class="form-control" placeholder="Search cases...">
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Case ID</th>
-                            <th>Farmer</th>
-                            <th>Crop</th>
-                            <th>Issue</th>
-                            <th>Date Reported</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>C001</td>
-                            <td>John Mugisha</td>
-                            <td>Maize</td>
-                            <td>Leaf Blight</td>
-                            <td>2025-07-10</td>
-                            <td><span class="badge bg-warning">In Progress</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-custom">Update</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>C002</td>
-                            <td>Mary Nakato</td>
-                            <td>Beans</td>
-                            <td>Rust</td>
-                            <td>2025-07-09</td>
-                            <td><span class="badge bg-success">Resolved</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-custom">View</button>
-                            </td>
-                        </tr>
-                    </tbody>
+        <tr>
+            <th>Farmer ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Location</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for farmer in farmers %}
+        <tr>
+            <td>{{ farmer.id }}</td>
+            <td>{{ farmer.get_full_name }}</td>
+            <td>{{ farmer.email }}</td>
+            <td>{{ farmer.profile.phone }}</td>
+            <td>{{ farmer.profile.address }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No farmers available.</td></tr>
+        {% endfor %}
+    </tbody>
                 </table>
             </div>
         </div>
@@ -370,18 +296,19 @@
                 <div class="col-md-6">
                     <div class="education-card">
                         <h5><i class="fas fa-calendar-alt"></i> Schedule Training</h5>
-                        <form>
+                        <form method="post" action="{% url 'schedule_training' %}">
+                            {% csrf_token %}
                             <div class="mb-3">
                                 <label class="form-label">Training Topic</label>
-                                <input type="text" class="form-control">
+                                <input type="text" class="form-control" name="topic" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Date</label>
-                                <input type="date" class="form-control">
+                                <input type="date" class="form-control" name="date" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Location</label>
-                                <input type="text" class="form-control">
+                                <input type="text" class="form-control" name="location" required>
                             </div>
                             <button class="btn btn-custom">Schedule Training</button>
                         </form>
