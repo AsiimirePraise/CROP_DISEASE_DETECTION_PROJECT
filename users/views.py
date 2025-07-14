@@ -6,7 +6,6 @@ from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 
 
-
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
@@ -45,17 +44,21 @@ def profile(request):
 def home(request):
     return render(request, 'home.html')
 
+
 @login_required
 def dashboard(request):
-    """Main dashboard that redirects based on user role"""
+    # Superuser gets admin dashboard
+    if request.user.is_superuser:
+        return render(request, 'dashboard/admin_dashboard.html', {'user_role': 'admin'})
+
     try:
-         # Ensure user has a profile
+        # Ensure user has a profile
         if hasattr(request.user, 'profile'):
             user_role = request.user.profile.get_user_role()
         
         if user_role == 'farmer':
-              # Redirect to the diagnosis app's index view
-                return redirect('diagnosis:index')
+            # Redirect to the diagnosis app's index view
+            return redirect('diagnosis:index')
         elif user_role == 'agronomist':
             return render(request, 'dashboard/agronomist_dashboard.html', {'user_role': 'agronomist'})
         elif user_role == 'extension_worker':
@@ -67,12 +70,12 @@ def dashboard(request):
     except Profile.DoesNotExist:
         messages.error(request, "Please complete your profile setup.")
         return redirect('profile')  # Redirect to profile page
-    
-    
+
+
 def logout_view(request):
     """
     Logout view - logs out the user and redirects to home page
     """
     logout(request)
     messages.success(request, 'You have been successfully logged out.')
-    return redirect('home') 
+    return redirect('home')

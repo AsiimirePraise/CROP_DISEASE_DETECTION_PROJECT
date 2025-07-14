@@ -23,7 +23,8 @@ urlpatterns = [
     path('', include('users.urls')),  # Include the URLs from the users app
     path('', include('diagnosis.urls')),  # This handles the root URL
     path('diagnosis/', include('diagnosis.urls')),  # Include the URLs from the diagnosis app
-    
+    path('adminpanel/', include('adminpanel.urls')),
+
     #path('profile/', account_views.profile, name='profile'),
     # Password reset URLs
     path('password_reset/', auth_views.PasswordResetView.as_view(
@@ -45,4 +46,7 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),
+
+     path('admin/', admin.site.urls),  # Default Django admin
+     path('adminpanel/', include('adminpanel.urls')),  # Your custom dashboard
 ]
