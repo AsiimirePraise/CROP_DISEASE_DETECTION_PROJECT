@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include('users.urls')),  # Include the URLs from the users app
     path('', include('diagnosis.urls')),  # This handles the root URL
     path('diagnosis/', include('diagnosis.urls')),  # Include the URLs from the diagnosis app
+    path('recommendations/', include('recommendations.urls')),  # Include the URLs from the recommendations app
     
     #path('profile/', account_views.profile, name='profile'),
     # Password reset URLs
