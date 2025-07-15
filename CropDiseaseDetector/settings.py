@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     # Third-party
     'rest_framework',
     'crispy_forms',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -66,7 +67,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'crop_disease_db',
         'USER': 'postgres',
-        'PASSWORD': 'root',
+        'PASSWORD': '12345',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -135,3 +136,5 @@ DEFAULT_FROM_EMAIL = 'marvin.bisaso99@gmail.com'
 LOGIN_REDIRECT_URL = 'dashboard'  # Redirect to dashboard after login
 LOGOUT_REDIRECT_URL = 'home'      # Redirect to home after logout
 LOGIN_URL = 'login'               # Redirect to login page when login required
+
+OPENWEATHER_API_KEY = 'c65ef43f009fa35f8e13b269d54725f6'

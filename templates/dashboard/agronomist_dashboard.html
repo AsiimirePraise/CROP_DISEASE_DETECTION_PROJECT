@@ -40,7 +40,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#recommendations" onclick="showSection('recommendations')">
-                    <i class="fas fa-prescription-bottle"></i> Recommendations
+                    <i class="fas fa-prescription-bottle"></i> Recommendations & Environmental Data
                 </a>
             </li>
             <li class="nav-item">
@@ -242,14 +242,39 @@
             </div>
         </div>
         
-        <!-- Recommendations Section -->
-        <div id="recommendations" class="content-section" style="display: none;">
-            <h3><i class="fas fa-prescription-bottle"></i> Treatment Recommendations</h3>
-            <div class="chart-container">
-                <p>Manage and provide treatment recommendations for diagnosed diseases.</p>
-                <button class="btn btn-custom">Create New Recommendation</button>
+      <!-- Recommendations Section -->
+<div id="recommendations" class="content-section" style="display: none;">
+    <h3><i class="fas fa-prescription-bottle"></i> Recommendations & Environmental Data</h3>
+    <div class="chart-container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="locationInput" class="form-label">Enter Location Coordinates</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="latitude" placeholder="Latitude">
+                        <input type="text" class="form-control" id="longitude" placeholder="Longitude">
+                        <button class="btn btn-custom" onclick="fetchWeatherData()">
+                            <i class="fas fa-cloud-sun"></i> Get Weather
+                        </button>
+                    </div>
+                    <small class="text-muted">Or use current location:</small>
+                    <button class="btn btn-sm btn-outline-secondary mt-2" onclick="getCurrentLocation()">
+                        <i class="fas fa-location-arrow"></i> Use My Location
+                    </button>
+                    <br><br>
+                    <button class="btn btn-custom" onclick="getWeatherRecommendation()">
+                            <i class="fas fa-prescription-bottle"></i> Get Recommendations based on Weather Data
+                        </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div id="weatherResults" class="border rounded p-3" style="min-height: 200px; background: #f8f9fa;">
+                    <p class="text-muted text-center mt-5">Weather data will appear here</p>
+                </div>
             </div>
         </div>
+    </div>
+</div>
         
         <!-- History Section -->
         <div id="history" class="content-section" style="display: none;">
@@ -535,6 +560,92 @@
                 }
             });
         });
+ let weatherData = null;       
+async function fetchWeatherData() {
+    const lat = document.getElementById('latitude').value;
+    const lon = document.getElementById('longitude').value;
+    const resultsDiv = document.getElementById('weatherResults');
+    
+    // Validate inputs
+    if (!lat || !lon) {
+        resultsDiv.innerHTML = '<div class="alert alert-danger">Please enter valid coordinates</div>';
+        return;
+    }
+
+    try {
+        // Construct PROPER URL with correct parameter names
+        const url = `/recommendations/weather/?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+        
+        const response = await fetch(url);
+        
+        // Check if response is OK (status 200-299)
+        if (!response.ok) {
+            throw new Error(`Server returned ${response.status}`);
+        }
+        
+        // Parse JSON response
+        const data = await response.json();
+        
+         // Store weather data globally
+        weatherData = data;
+
+        // Display results
+        resultsDiv.innerHTML = `
+            <h5>Current Weather</h5>
+            <p>Temperature: ${data.temperature}°C</p>
+            <p>Humidity: ${data.humidity}%</p>
+            <p>Conditions: ${data.conditions}</p>
+        `;
+    } catch (error) {
+        console.error('Error:', error);
+        resultsDiv.innerHTML = `<div class="alert alert-danger">Failed to load weather data: ${error.message}</div>`;
+    }
+}
+
+function getCurrentLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                document.getElementById('latitude').value = position.coords.latitude;
+                document.getElementById('longitude').value = position.coords.longitude;
+            },
+            error => {
+                alert(`Error getting location: ${error.message}`);
+            }
+        );
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+function getWeatherRecommendation() {
+   if (!weatherData) {
+        alert('Please fetch weather data first');
+        return;
+    }
+    
+    let recommendation = '';
+    
+    if (weatherData.humidity > 80) {
+        recommendation = "Increased risk of fungal diseases - consider preventive fungicide applications";
+    } else if (weatherData.temperature > 30) {
+        recommendation = "High temperatures may stress plants - ensure adequate irrigation";
+    } else {
+        recommendation = "Favorable conditions for most crops because humidity is moderate(less than 80%) and temperature is average(below 30°C)";
+     
+    // Display the recommendation
+    const resultsDiv = document.getElementById('weatherResults');
+    const currentContent = resultsDiv.innerHTML;
+    
+    resultsDiv.innerHTML = currentContent + `
+        <hr>
+        <h5>Recommendation</h5>
+        <div class="alert alert-info">
+            <i class="fas fa-lightbulb"></i> ${recommendation}
+        </div>
+    `;
+    }
+}
         
         // Diagnosis function
         function diagnoseCrop() {
