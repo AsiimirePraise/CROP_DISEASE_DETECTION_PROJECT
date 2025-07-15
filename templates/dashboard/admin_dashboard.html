@@ -1,105 +1,49 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard | AgroDetect</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-        }
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            position: fixed;
-            background-color: #343a40;
-            color: white;
-            padding: 20px;
-        }
-        .sidebar .nav-link {
-            color: white;
-            margin-bottom: 10px;
-        }
-        .sidebar .nav-link:hover {
-            background-color: #495057;
-            border-radius: 5px;
-        }
-        .main-content {
-            margin-left: 250px;
-            padding: 2rem;
-        }
-    </style>
-</head>
-<body>
+{% extends 'adminpanel/base_admin.html' %}
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h4 class="text-white mb-4">Admin Panel</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'manage-users' %}">👤 Manage Users</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'manage-issues' %}">📢 Reported Issues</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'manage-datasets' %}">🖼 Manage Datasets</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'retrain-model' %}">🔁 Retrain AI Model</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">🚪 Logout</a>
-            </li>
-        </ul>
-        <hr class="text-white">
-        <p>Logged in as <strong>{{ request.user.username }}</strong></p>
-    </div>
+{% block title %}Admin Dashboard{% endblock %}
 
-    <!-- Main content -->
-    <div class="main-content">
-        <h1>Welcome to the Admin Dashboard</h1>
-        <p>This is a customizable admin interface. Use the sidebar to navigate.</p>
+{% block content %}
+    <h2 class="mb-4">Welcome to the Admin Dashboard</h2>
 
-        <!-- You can add dashboard statistics, charts, tables, etc. here -->
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="card text-white bg-primary mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Manage Users</h5>
-                        <p class="card-text">View, update, or remove system users.</p>
-                        <a href="{% url 'manage-users' %}" class="btn btn-light btn-sm">Go</a>
-                    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Manage Users</h5>
+                    <p class="card-text">View, add, and manage all system users.</p>
+                    <a href="{% url 'manage-users' %}" class="btn btn-light">Go</a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-success mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Reported Issues</h5>
-                        <p class="card-text">Review and resolve user-reported problems.</p>
-                        <a href="{% url 'manage-issues' %}" class="btn btn-light btn-sm">Go</a>
-                    </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Reported Issues</h5>
+                    <p class="card-text">Review and resolve reported system issues.</p>
+                    <a href="{% url 'manage-issues' %}" class="btn btn-light">Go</a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card text-white bg-info mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Image Datasets</h5>
-                        <p class="card-text">Upload or manage model training data.</p>
-                        <a href="{% url 'manage-datasets' %}" class="btn btn-light btn-sm">Go</a>
-                    </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Image Datasets</h5>
+                    <p class="card-text">Manage uploaded image datasets for training.</p>
+                    <a href="{% url 'manage-datasets' %}" class="btn btn-light">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Retrain AI Model</h5>
+                    <p class="card-text">Trigger AI model retraining with new data.</p>
+                    <a href="{% url 'retrain-model' %}" class="btn btn-light">Go</a>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Bootstrap JS (Optional but recommended) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}
