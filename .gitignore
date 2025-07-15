@@ -25,3 +25,9 @@ dist-ssr
 venv/
 __pycache__/
 *.pyc
+
+
+*.jpg
+*.jpeg
+*.png
+CNN/disease
