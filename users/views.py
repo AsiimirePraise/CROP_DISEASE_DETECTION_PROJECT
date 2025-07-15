@@ -76,7 +76,7 @@ def dashboard(request):
                 active_cases = DiagnosisRequest.objects.all().count()
 
                 # Pending visits or treatment recommendations
-                pending_visits = Recommendation.objects.all().count()
+                recommendations = Recommendation.objects.all().count()
 
                 if request.method == 'POST':
                     farmer_id = request.POST.get('farmer')
@@ -90,7 +90,7 @@ def dashboard(request):
                     'farmers': farmers,
                     'farmer_count': farmer_count,
                     'active_cases': active_cases,
-                    'pending_visits': pending_visits,
+                    'recommendations': recommendations,
                     'user_role': 'extension_worker'
                 })
         else:
@@ -100,8 +100,7 @@ def dashboard(request):
     except Profile.DoesNotExist:
         messages.error(request, "Please complete your profile setup.")
         return redirect('profile')  # Redirect to profile page
-
-
+    
 def logout_view(request):
     """
     Logout view - logs out the user and redirects to home page
