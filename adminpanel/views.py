@@ -1,7 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-
+from users.models import Profile
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from .forms import CustomUserCreationForm
+from .forms import EditUserForm 
+from django.db import transaction
 # Optional: Decorator to allow only superusers
 def admin_required(view_func):
     decorated_view_func = login_required(user_passes_test(lambda u: u.is_superuser)(view_func))
@@ -36,3 +42,118 @@ def retrain_model(request):
         message = "Model retraining started successfully."
         return render(request, 'adminpanel/retrain_model.html', {'message': message})
     return render(request, 'adminpanel/retrain_model.html')
+
+def manage_users(request):
+    users = User.objects.filter(is_superuser=False).select_related('profile')
+
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.email = form.cleaned_data['email']
+            user.save()
+
+            # Save profile fields
+            profile = user.profile
+            profile.phone = form.cleaned_data['Phone']
+            profile.address = form.cleaned_data['Address']
+
+            # Reset all roles first
+            profile.farmer = False
+            profile.agronomist = False
+            profile.extension_worker = False
+
+            # Set selected role
+            selected_role = form.cleaned_data['role']
+            if selected_role == 'farmer':
+                profile.farmer = True
+            elif selected_role == 'agronomist':
+                profile.agronomist = True
+            elif selected_role == 'extension_worker':
+                profile.extension_worker = True
+
+            profile.save()
+
+            messages.success(request, 'User created successfully.')
+            return redirect('manage-users')
+    else:
+        form = CustomUserCreationForm()
+
+    return render(request, 'adminpanel/manage_users.html', {'users': users, 'form': form})
+
+
+def edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        form = EditUserForm(request.POST, instance=user)
+
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Update User fields
+                    user.username = form.cleaned_data['username']
+                    user.email = form.cleaned_data['email']
+                    user.save()
+
+                    # Get or create profile
+                    profile, created = Profile.objects.get_or_create(user=user)
+
+                    # Update profile fields
+                    profile.phone = form.cleaned_data.get('Phone', '')
+                    profile.address = form.cleaned_data.get('Address', '')
+
+                    # Reset all roles to False
+                    profile.farmer = False
+                    profile.agronomist = False
+                    profile.extension_worker = False
+
+                    # Set selected role to True
+                    selected_role = form.cleaned_data.get('role')
+                    if selected_role == 'farmer':
+                        profile.farmer = True
+                    elif selected_role == 'agronomist':
+                        profile.agronomist = True
+                    elif selected_role == 'extension_worker':
+                        profile.extension_worker = True
+
+                    profile.save()
+
+                    messages.success(request, f'User "{user.username}" updated successfully.')
+                    return redirect('manage-users')
+                         
+            except Exception as e:
+                messages.error(request, f'Error updating user: {str(e)}')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+
+    else:
+        try:
+            profile = user.profile
+            # Determine current role
+            if profile.farmer:
+                role = 'farmer'
+            elif profile.agronomist:
+                role = 'agronomist'
+            elif profile.extension_worker:
+                role = 'extension_worker'
+            else:
+                role = ''
+        except Profile.DoesNotExist:
+            profile = None
+            role = ''
+
+        form = EditUserForm(initial={
+            'username': user.username,
+            'email': user.email,
+            'Phone': profile.phone if profile else '',
+            'Address': profile.address if profile else '',
+            'role': role,
+        }, instance=user)
+
+    context = {
+        'form': form,
+        'user': user,
+        'title': f'Edit User: {user.username}'
+    }
+    return render(request, 'adminpanel/edit_user.html', context)

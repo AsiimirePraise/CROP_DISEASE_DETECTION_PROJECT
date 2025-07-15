@@ -24,9 +24,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),  # Include the URLs from the users app
     path('', include('diagnosis.urls')),  # This handles the root URL
-    path('diagnosis/', include('diagnosis.urls')),  # Include the URLs from the diagnosis app
-    path('adminpanel/', include('adminpanel.urls')),
-
+   path('adminpanel/', include('adminpanel.urls')),
+    path('recommendations/', include('recommendations.urls')),
+    
     #path('profile/', account_views.profile, name='profile'),
     # Password reset URLs
     path('password_reset/', auth_views.PasswordResetView.as_view(
