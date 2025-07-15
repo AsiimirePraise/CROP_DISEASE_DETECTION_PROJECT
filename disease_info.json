@@ -1,0 +1,186 @@
+{
+  "Apple___Apple_scab": {
+    "crop": "Apple",
+    "disease": "Apple Scab",
+    "affected_parts": ["Leaves", "Fruit", "Twigs"],
+    "primary_affected": "Leaves",
+    "description": "Apple scab is a common fungal disease of apple and crabapple trees. It causes olive-green to brown spots on leaves, fruit, and twigs. Severe infections can lead to defoliation and reduced fruit quality.",
+    "symptoms": "Olive-green to brown spots on leaves, often with a velvety texture. Spots on fruit are dark, circular, and may become corky. Leaves may yellow and drop prematurely."
+  },
+  "Apple___Black_rot": {
+    "crop": "Apple",
+    "disease": "Black Rot",
+    "affected_parts": ["Fruit", "Leaves", "Branches"],
+    "primary_affected": "Fruit",
+    "description": "Black rot is a fungal disease affecting apples, causing dark, sunken lesions on fruit, leaf spots, and cankers on branches. It can lead to significant fruit loss.",
+    "symptoms": "Dark, circular, sunken lesions on fruit, often with concentric rings. Purple-bordered brown spots on leaves ('frogeye leaf spot'). Cankers on branches."
+  },
+  "Apple___Cedar_apple_rust": {
+    "crop": "Apple",
+    "disease": "Cedar Apple Rust",
+    "affected_parts": ["Leaves", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Cedar apple rust is a fungal disease that requires both apple/crabapple and cedar/juniper trees to complete its life cycle. It causes bright orange spots on apple leaves.",
+    "symptoms": "Bright orange-yellow spots on apple leaves, often with small black dots (pycnia) in the center. Lesions may also appear on fruit."
+  },
+  "Apple___healthy": {
+    "crop": "Apple",
+    "disease": "Healthy",
+    "affected_parts": ["All"],
+    "primary_affected": "All",
+    "description": "The apple plant shows no signs of disease and appears to be in good health.",
+    "symptoms": "Vibrant green leaves, strong branches, and healthy fruit development. No discoloration, spots, or wilting observed."
+  },
+  "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": {
+    "crop": "Corn (Maize)",
+    "disease": "Cercospora Leaf Spot / Gray Leaf Spot",
+    "affected_parts": ["Leaves"],
+    "primary_affected": "Leaves",
+    "description": "Gray leaf spot is a fungal disease of corn caused by Cercospora zeae-maydis. It produces rectangular, gray-brown lesions on leaves, reducing photosynthetic area and yield.",
+    "symptoms": "Long, narrow, rectangular lesions (gray-brown) on leaves, typically parallel to the leaf veins. Lesions may coalesce, causing blighting of leaves."
+  },
+  "Corn_(maize)___Common_rust_": {
+    "crop": "Corn (Maize)",
+    "disease": "Common Rust",
+    "affected_parts": ["Leaves", "Stems"],
+    "primary_affected": "Leaves",
+    "description": "Common rust is a fungal disease of corn caused by Puccinia sorghi. It appears as small, cinnamon-brown pustules on both sides of leaves, which release spores.",
+    "symptoms": "Small, circular to oval, cinnamon-brown pustules on both upper and lower leaf surfaces. Pustules may rupture, releasing powdery rust spores."
+  },
+  "Corn_(maize)___Northern_Leaf_Blight": {
+    "crop": "Corn (Maize)",
+    "disease": "Northern Leaf Blight",
+    "affected_parts": ["Leaves"],
+    "primary_affected": "Leaves",
+    "description": "Northern leaf blight is a fungal disease caused by Exserohilum turcicum. It creates long, elliptical, gray-green lesions on corn leaves, leading to significant yield loss in severe cases.",
+    "symptoms": "Long, elliptical, cigar-shaped lesions (gray-green to tan) on leaves, often starting on lower leaves and progressing upwards. Lesions may coalesce."
+  },
+  "Corn_(maize)___healthy": {
+    "crop": "Corn (Maize)",
+    "disease": "Healthy",
+    "affected_parts": ["All"],
+    "primary_affected": "All",
+    "description": "The corn plant shows no signs of disease and appears to be in good health.",
+    "symptoms": "Vibrant green leaves, strong stalks, and healthy ear development. No discoloration, spots, or wilting observed."
+  },
+  "Pepper,_bell___Bacterial_spot": {
+    "crop": "Pepper, Bell",
+    "disease": "Bacterial Spot",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Bacterial spot is a common and destructive disease of peppers and tomatoes caused by Xanthomonas campestris pv. vesicatoria. It causes dark, water-soaked spots on leaves and fruit.",
+    "symptoms": "Small, dark, water-soaked spots on leaves that become angular and necrotic with yellow halos. Raised, scab-like lesions on fruit."
+  },
+  "Pepper,_bell___healthy": {
+    "crop": "Pepper, Bell",
+    "disease": "Healthy",
+    "affected_parts": ["All"],
+    "primary_affected": "All",
+    "description": "The bell pepper plant shows no signs of disease and appears to be in good health.",
+    "symptoms": "Vibrant green leaves, strong stems, and healthy fruit development. No discoloration, spots, or wilting observed."
+  },
+  "Potato___Early_blight": {
+    "crop": "Potato",
+    "disease": "Early Blight",
+    "affected_parts": ["Leaves", "Stems", "Tubers"],
+    "primary_affected": "Leaves",
+    "description": "Early blight is a common fungal disease of potatoes caused by Alternaria solani. It causes characteristic target-like spots on leaves, leading to premature defoliation.",
+    "symptoms": "Dark brown to black spots on older leaves, often with concentric rings (target-like appearance). Yellowing of tissue around spots. Lesions on stems and tubers."
+  },
+  "Potato___Late_blight": {
+    "crop": "Potato",
+    "disease": "Late Blight",
+    "affected_parts": ["Leaves", "Stems", "Tubers"],
+    "primary_affected": "Leaves",
+    "description": "Late blight is a highly destructive disease of potatoes caused by Phytophthora infestans. It can rapidly destroy foliage and tubers, especially in cool, wet conditions.",
+    "symptoms": "Large, irregular, water-soaked lesions on leaves that turn brown/black. A fuzzy white mold may be visible on the underside of leaves. Brown, firm rot on tubers."
+  },
+  "Potato___healthy": {
+    "crop": "Potato",
+    "disease": "Healthy",
+    "affected_parts": ["All"],
+    "primary_affected": "All",
+    "description": "The potato plant shows no signs of disease and appears to be in good health.",
+    "symptoms": "Vibrant green leaves, strong stems, and healthy tuber development. No discoloration, spots, or wilting observed."
+  },
+  "Tomato___Bacterial_spot": {
+    "crop": "Tomato",
+    "disease": "Bacterial Spot",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Bacterial spot is a common and destructive disease of tomatoes and peppers caused by Xanthomonas campestris pv. vesicatoria. It causes dark, water-soaked spots on leaves and fruit.",
+    "symptoms": "Small, dark, water-soaked spots on leaves that become angular and necrotic with yellow halos. Raised, scab-like lesions on fruit."
+  },
+  "Tomato___Early_blight": {
+    "crop": "Tomato",
+    "disease": "Early Blight",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Early blight is a common fungal disease of tomatoes caused by Alternaria solani. It causes characteristic target-like spots on leaves, leading to premature defoliation.",
+    "symptoms": "Dark brown to black spots on older leaves, often with concentric rings (target-like appearance). Yellowing of tissue around spots. Lesions on stems and fruit."
+  },
+  "Tomato___Late_blight": {
+    "crop": "Tomato",
+    "disease": "Late Blight",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Late blight is a devastating disease of tomato and potato caused by the oomycete Phytophthora infestans. It thrives in cool, wet conditions and can rapidly destroy entire crops.",
+    "symptoms": "Large, irregular, water-soaked spots on leaves that quickly turn brown or black. A fuzzy white mold may be visible on the underside of leaves in humid conditions. Brown, firm spots on fruit."
+  },
+  "Tomato___Leaf_Mold": {
+    "crop": "Tomato",
+    "disease": "Leaf Mold",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Leaf mold is a fungal disease of tomatoes caused by Passalora fulva. It thrives in high humidity and causes velvety, olive-green to brown patches on the undersides of leaves.",
+    "symptoms": "Yellowish spots on the upper leaf surface, corresponding to olive-green to brown, velvety fungal growth on the underside. Leaves may curl and drop."
+  },
+  "Tomato___Septoria_leaf_spot": {
+    "crop": "Tomato",
+    "disease": "Septoria Leaf Spot",
+    "affected_parts": ["Leaves", "Stems"],
+    "primary_affected": "Leaves",
+    "description": "Septoria leaf spot is a common fungal disease of tomatoes caused by Septoria lycopersici. It causes numerous small, circular spots with dark borders and tiny black dots in the center.",
+    "symptoms": "Numerous small, circular spots (1/16 to 1/4 inch) on lower leaves, with dark brown borders and tan to gray centers. Tiny black dots (pycnidia) are visible in the center of spots."
+  },
+  "Tomato___Spider_mites Two-spotted_spider_mite": {
+    "crop": "Tomato",
+    "disease": "Spider Mites (Two-spotted)",
+    "affected_parts": ["Leaves", "Stems"],
+    "primary_affected": "Leaves",
+    "description": "Two-spotted spider mites are tiny arachnids that feed on plant sap, causing stippling, yellowing, and bronzing of leaves. Severe infestations can lead to defoliation and reduced yield.",
+    "symptoms": "Tiny yellow or white stippling on leaves. Fine webbing on the undersides of leaves or between leaves and stems. Leaves may turn yellow, bronze, or brown and drop prematurely."
+  },
+  "Tomato___Target_Spot": {
+    "crop": "Tomato",
+    "disease": "Target Spot",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Target spot is a fungal disease of tomatoes caused by Corynespora cassiicola. It produces distinctive circular lesions with concentric rings, resembling a target.",
+    "symptoms": "Small, dark, circular spots on older leaves that enlarge and develop concentric rings (target-like appearance). Spots may also appear on stems and fruit."
+  },
+  "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+    "crop": "Tomato",
+    "disease": "Tomato Yellow Leaf Curl Virus",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Tomato Yellow Leaf Curl Virus (TYLCV) is a devastating viral disease transmitted by whiteflies. It causes severe stunting, yellowing, and upward curling of leaves, leading to significant yield loss.",
+    "symptoms": "Severe stunting of plants. Upward curling and yellowing of leaf margins. Reduced leaf size. Flowers may drop, and fruit set is poor or absent."
+  },
+  "Tomato___Tomato_mosaic_virus": {
+    "crop": "Tomato",
+    "disease": "Tomato Mosaic Virus",
+    "affected_parts": ["Leaves", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Tomato Mosaic Virus (ToMV) is a highly contagious viral disease that causes mosaic patterns on leaves, stunting, and malformed fruit. It is easily spread by contact.",
+    "symptoms": "Light and dark green mosaic or mottling patterns on leaves. Leaves may be distorted, puckered, or fern-like. Stunting of plants. Fruit may be malformed or have uneven ripening."
+  },
+  "Tomato___healthy": {
+    "crop": "Tomato",
+    "disease": "Healthy",
+    "affected_parts": ["All"],
+    "primary_affected": "All",
+    "description": "The tomato plant shows no signs of disease and appears to be in good health.",
+    "symptoms": "Vibrant green leaves, strong stems, and healthy fruit development. No discoloration, spots, or wilting observed."
+  }
+}
