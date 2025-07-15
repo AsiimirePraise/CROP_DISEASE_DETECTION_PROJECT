@@ -1,0 +1,139 @@
+{
+  "Apple___Apple_scab": [
+    "Fungicide application: Apply fungicides containing captan, myclobutanil, or propiconazole according to label instructions.",
+    "Sanitation: Rake and remove fallen leaves and fruit in autumn to reduce overwintering inoculum.",
+    "Pruning: Improve air circulation by pruning trees to open up the canopy.",
+    "Resistant varieties: Plant scab-resistant apple varieties if possible."
+  ],
+  "Apple___Black_rot": [
+    "Pruning: Remove and destroy infected branches and mummified fruit.",
+    "Fungicide application: Apply fungicides during bloom and fruit development.",
+    "Sanitation: Clean up fallen leaves and fruit to reduce fungal inoculum.",
+    "Improve air circulation: Proper tree spacing and pruning can help."
+  ],
+  "Apple___Cedar_apple_rust": [
+    "Remove nearby junipers: If practical, remove juniper trees within a few hundred feet of apple trees.",
+    "Fungicide application: Apply fungicides containing myclobutanil or propiconazole during spring.",
+    "Resistant varieties: Plant apple varieties resistant to cedar apple rust.",
+    "Pruning: Prune out galls on juniper trees before they produce spores."
+  ],
+  "Apple___healthy": [
+    "Continue good agricultural practices.",
+    "Monitor for pests and diseases regularly.",
+    "Ensure proper fertilization and watering.",
+    "Maintain good soil health."
+  ],
+  "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot": [
+    "Resistant varieties: Plant corn hybrids with resistance to gray leaf spot.",
+    "Crop rotation: Rotate corn with non-host crops (e.g., soybeans) to reduce inoculum.",
+    "Tillage: Burying corn residue can reduce fungal survival.",
+    "Fungicide application: Apply fungicides if disease pressure is high and conditions are favorable."
+  ],
+  "Corn_(maize)___Common_rust_": [
+    "Resistant varieties: Plant corn hybrids with resistance to common rust.",
+    "Fungicide application: Apply fungicides if disease is severe, especially during early growth stages.",
+    "Crop rotation: While less effective for rust, it can help with overall plant health."
+  ],
+  "Corn_(maize)___Northern_Leaf_Blight": [
+    "Resistant varieties: Plant corn hybrids with resistance to northern leaf blight.",
+    "Crop rotation: Rotate corn with non-host crops.",
+    "Tillage: Burying corn residue can reduce fungal survival.",
+    "Fungicide application: Apply fungicides if disease pressure is high and conditions are favorable."
+  ],
+  "Corn_(maize)___healthy": [
+    "Continue good agricultural practices.",
+    "Monitor for pests and diseases regularly.",
+    "Ensure proper fertilization and watering.",
+    "Maintain good soil health."
+  ],
+  "Pepper,_bell___Bacterial_spot": [
+    "Resistant varieties: Plant bell pepper varieties with resistance to bacterial spot.",
+    "Sanitation: Remove and destroy infected plant debris.",
+    "Avoid overhead irrigation: Water at the base of plants to keep foliage dry.",
+    "Copper-based sprays: Apply copper-based bactericides, though effectiveness can vary."
+  ],
+  "Pepper,_bell___healthy": [
+    "Continue good agricultural practices.",
+    "Monitor for pests and diseases regularly.",
+    "Ensure proper fertilization and watering.",
+    "Maintain good soil health."
+  ],
+  "Potato___Early_blight": [
+    "Resistant varieties: Plant potato varieties with some resistance to early blight.",
+    "Crop rotation: Rotate potatoes with non-solanaceous crops.",
+    "Fungicide application: Apply protective fungicides (e.g., chlorothalonil, mancozeb) before disease appears.",
+    "Sanitation: Remove infected plant debris after harvest."
+  ],
+  "Potato___Late_blight": [
+    "Resistant varieties: Plant potato varieties with resistance to late blight.",
+    "Fungicide application: Apply systemic and protective fungicides regularly, especially in cool, wet conditions.",
+    "Sanitation: Destroy all infected plant material and volunteer potatoes.",
+    "Hilling: Ensure tubers are well covered with soil to prevent spore contact."
+  ],
+  "Potato___healthy": [
+    "Continue good agricultural practices.",
+    "Monitor for pests and diseases regularly.",
+    "Ensure proper fertilization and watering.",
+    "Maintain good soil health."
+  ],
+  "Tomato___Bacterial_spot": [
+    "Resistant varieties: Plant tomato varieties with resistance to bacterial spot.",
+    "Sanitation: Remove and destroy infected plant debris.",
+    "Avoid overhead irrigation: Water at the base of plants to keep foliage dry.",
+    "Copper-based sprays: Apply copper-based bactericides, though effectiveness can vary."
+  ],
+  "Tomato___Early_blight": [
+    "Resistant varieties: Plant tomato varieties with some resistance to early blight.",
+    "Crop rotation: Rotate tomatoes with non-solanaceous crops.",
+    "Fungicide application: Apply protective fungicides (e.g., chlorothalonil, mancozeb) before disease appears.",
+    "Sanitation: Remove infected lower leaves and plant debris."
+  ],
+  "Tomato___Late_blight": [
+    "Resistant varieties: Plant tomato varieties with resistance to late blight.",
+    "Fungicide application: Apply systemic and protective fungicides regularly, especially in cool, wet conditions.",
+    "Sanitation: Destroy all infected plant material and volunteer tomatoes.",
+    "Pruning: Improve air circulation by pruning lower leaves."
+  ],
+  "Tomato___Leaf_Mold": [
+    "Improve air circulation: Ensure good plant spacing and prune lower leaves.",
+    "Ventilation: In greenhouses, ensure good ventilation to reduce humidity.",
+    "Fungicide application: Apply fungicides if disease is severe.",
+    "Resistant varieties: Plant leaf mold resistant tomato varieties."
+  ],
+  "Tomato___Septoria_leaf_spot": [
+    "Sanitation: Remove and destroy infected lower leaves and plant debris.",
+    "Avoid overhead irrigation: Water at the base of plants.",
+    "Crop rotation: Rotate tomatoes with non-solanaceous crops.",
+    "Fungicide application: Apply fungicides if disease is severe."
+  ],
+  "Tomato___Spider_mites Two-spotted_spider_mite": [
+    "Water spray: Use a strong stream of water to dislodge mites from plants.",
+    "Insecticidal soap/Neem oil: Apply these to control mite populations.",
+    "Biological control: Introduce predatory mites.",
+    "Pruning: Remove heavily infested leaves."
+  ],
+  "Tomato___Target_Spot": [
+    "Sanitation: Remove and destroy infected plant debris.",
+    "Crop rotation: Rotate tomatoes with non-solanaceous crops.",
+    "Fungicide application: Apply fungicides if disease is severe.",
+    "Improve air circulation: Ensure good plant spacing."
+  ],
+  "Tomato___Tomato_Yellow_Leaf_Curl_Virus": [
+    "Whitefly control: Manage whitefly populations using insecticides, sticky traps, or biological controls.",
+    "Resistant varieties: Plant TYLCV-resistant tomato varieties.",
+    "Remove infected plants: Immediately remove and destroy infected plants to prevent spread.",
+    "Use reflective mulches: Can deter whiteflies."
+  ],
+  "Tomato___Tomato_mosaic_virus": [
+    "Sanitation: Wash hands and tools frequently when handling plants. Avoid using tobacco products near plants.",
+    "Remove infected plants: Immediately remove and destroy infected plants.",
+    "Resistant varieties: Plant ToMV-resistant tomato varieties.",
+    "Pest control: Control insect vectors that might spread the virus."
+  ],
+  "Tomato___healthy": [
+    "Continue good agricultural practices.",
+    "Monitor for pests and diseases regularly.",
+    "Ensure proper fertilization and watering.",
+    "Maintain good soil health."
+  ]
+}
