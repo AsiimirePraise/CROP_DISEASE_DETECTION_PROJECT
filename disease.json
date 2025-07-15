@@ -1,0 +1,186 @@
+{
+  "Apple___Apple_scab": {
+    "crop": "Apple",
+    "disease": "Apple Scab",
+    "affected_parts": ["Leaves", "Fruit", "Twigs"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing dark, scabby lesions on leaves and fruit",
+    "symptoms": "Dark olive-green to black spots on leaves, fruit deformation and cracking"
+  },
+  "Apple___Black_rot": {
+    "crop": "Apple",
+    "disease": "Black Rot",
+    "affected_parts": ["Fruit", "Leaves", "Branches"],
+    "primary_affected": "Fruit",
+    "description": "Serious fungal disease causing fruit rot and leaf spots",
+    "symptoms": "Brown to black rot on fruit, leaf spots with purple borders"
+  },
+  "Apple___Cedar_apple_rust": {
+    "crop": "Apple",
+    "disease": "Cedar Apple Rust",
+    "affected_parts": ["Leaves", "Fruit", "Twigs"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing orange spots on leaves",
+    "symptoms": "Bright orange spots on upper leaf surface, yellow spots on fruit"
+  },
+  "Apple___healthy": {
+    "crop": "Apple",
+    "disease": "Healthy",
+    "affected_parts": ["None"],
+    "primary_affected": "None",
+    "description": "Plant appears healthy with no visible disease symptoms",
+    "symptoms": "No disease symptoms detected"
+  },
+  "Corn_(maize)_Cercospora_leaf_spot Gray_leaf_spot": {
+    "crop": "Corn",
+    "disease": "Gray Leaf Spot",
+    "affected_parts": ["Leaves", "Leaf Sheaths"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing rectangular gray lesions on leaves",
+    "symptoms": "Rectangular gray-brown lesions with parallel sides on leaves"
+  },
+  "Corn_(maize)Common_rust": {
+    "crop": "Corn",
+    "disease": "Common Rust",
+    "affected_parts": ["Leaves", "Leaf Sheaths", "Husks"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing rust-colored pustules on leaves",
+    "symptoms": "Circular to oval rust-colored pustules on both leaf surfaces"
+  },
+  "Corn_(maize)_Northern_Leaf_Blight": {
+    "crop": "Corn",
+    "disease": "Northern Leaf Blight",
+    "affected_parts": ["Leaves", "Husks", "Stalks"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing large, cigar-shaped lesions on leaves",
+    "symptoms": "Large, cigar-shaped gray-green lesions on leaves"
+  },
+  "Corn_(maize)_healthy": {
+    "crop": "Corn",
+    "disease": "Healthy",
+    "affected_parts": ["None"],
+    "primary_affected": "None",
+    "description": "Plant appears healthy with no visible disease symptoms",
+    "symptoms": "No disease symptoms detected"
+  },
+  "Pepper,bell__Bacterial_spot": {
+    "crop": "Bell Pepper",
+    "disease": "Bacterial Spot",
+    "affected_parts": ["Leaves", "Fruit", "Stems"],
+    "primary_affected": "Leaves",
+    "description": "Bacterial disease causing dark spots on leaves and fruit",
+    "symptoms": "Dark brown spots with yellow halos on leaves, scab-like spots on fruit"
+  },
+  "Pepper,bell__healthy": {
+    "crop": "Bell Pepper",
+    "disease": "Healthy",
+    "affected_parts": ["None"],
+    "primary_affected": "None",
+    "description": "Plant appears healthy with no visible disease symptoms",
+    "symptoms": "No disease symptoms detected"
+  },
+  "Potato___Early_blight": {
+    "crop": "Potato",
+    "disease": "Early Blight",
+    "affected_parts": ["Leaves", "Stems", "Tubers"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing dark spots with concentric rings on leaves",
+    "symptoms": "Dark spots with concentric rings on leaves, stem lesions, tuber rot"
+  },
+  "Potato___Late_blight": {
+    "crop": "Potato",
+    "disease": "Late Blight",
+    "affected_parts": ["Leaves", "Stems", "Tubers"],
+    "primary_affected": "Leaves",
+    "description": "Serious fungal disease that can destroy entire crops rapidly",
+    "symptoms": "Water-soaked lesions on leaves, white fungal growth, tuber rot"
+  },
+  "Potato___healthy": {
+    "crop": "Potato",
+    "disease": "Healthy",
+    "affected_parts": ["None"],
+    "primary_affected": "None",
+    "description": "Plant appears healthy with no visible disease symptoms",
+    "symptoms": "No disease symptoms detected"
+  },
+  "Tomato___Bacterial_spot": {
+    "crop": "Tomato",
+    "disease": "Bacterial Spot",
+    "affected_parts": ["Leaves", "Fruit", "Stems"],
+    "primary_affected": "Leaves",
+    "description": "Bacterial disease causing dark spots on leaves and fruit",
+    "symptoms": "Dark brown spots with yellow halos on leaves, raised spots on fruit"
+  },
+  "Tomato___Early_blight": {
+    "crop": "Tomato",
+    "disease": "Early Blight",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing dark spots with target-like patterns",
+    "symptoms": "Concentric ring patterns on leaves, stem cankers, fruit rot"
+  },
+  "Tomato___Late_blight": {
+    "crop": "Tomato",
+    "disease": "Late Blight",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Devastating fungal disease that can destroy crops quickly",
+    "symptoms": "Water-soaked lesions, white fungal growth, rapid plant death"
+  },
+  "Tomato___Leaf_Mold": {
+    "crop": "Tomato",
+    "disease": "Leaf Mold",
+    "affected_parts": ["Leaves"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing yellow patches and fuzzy growth on leaves",
+    "symptoms": "Yellow patches on upper leaf surface, fuzzy growth on underside"
+  },
+  "Tomato___Septoria_leaf_spot": {
+    "crop": "Tomato",
+    "disease": "Septoria Leaf Spot",
+    "affected_parts": ["Leaves"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing small, circular spots with dark borders",
+    "symptoms": "Small circular spots with dark borders and gray centers"
+  },
+  "Tomato___Spider_mites Two-spotted_spider_mite": {
+    "crop": "Tomato",
+    "disease": "Spider Mites",
+    "affected_parts": ["Leaves"],
+    "primary_affected": "Leaves",
+    "description": "Pest infestation causing stippled, yellowing leaves",
+    "symptoms": "Stippled yellowing leaves, fine webbing, tiny moving dots"
+  },
+  "Tomato___Target_Spot": {
+    "crop": "Tomato",
+    "disease": "Target Spot",
+    "affected_parts": ["Leaves", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Fungal disease causing circular spots with concentric rings",
+    "symptoms": "Circular spots with concentric rings, target-like appearance"
+  },
+  "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+    "crop": "Tomato",
+    "disease": "Yellow Leaf Curl Virus",
+    "affected_parts": ["Leaves", "Stems", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Viral disease causing yellowing and curling of leaves",
+    "symptoms": "Upward curling of leaves, yellowing, stunted growth"
+  },
+  "Tomato___Tomato_mosaic_virus": {
+    "crop": "Tomato",
+    "disease": "Mosaic Virus",
+    "affected_parts": ["Leaves", "Fruit"],
+    "primary_affected": "Leaves",
+    "description": "Viral disease causing mottled, mosaic-like patterns on leaves",
+    "symptoms": "Mottled light and dark green patterns on leaves, fruit discoloration"
+  },
+  "Tomato___healthy": {
+    "crop": "Tomato",
+    "disease": "Healthy",
+    "affected_parts": ["None"],
+    "primary_affected": "None",
+    "description": "Plant appears healthy with no visible disease symptoms",
+    "symptoms": "No disease symptoms detected"
+  }
+}

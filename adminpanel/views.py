@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
@@ -8,6 +9,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .forms import CustomUserCreationForm
 from .forms import EditUserForm 
 from django.db import transaction
+from django.db.models import Count, Q, Avg
+from django.utils import timezone
+from datetime import datetime, timedelta
+from diagnosis.models import DiagnosisRequest
+import json
 # Optional: Decorator to allow only superusers
 def admin_required(view_func):
     decorated_view_func = login_required(user_passes_test(lambda u: u.is_superuser)(view_func))
@@ -157,3 +163,62 @@ def edit_user(request, user_id):
         'title': f'Edit User: {user.username}'
     }
     return render(request, 'adminpanel/edit_user.html', context)
+@login_required
+def admin_dashboard(request):
+    # Check if user is admin
+    if not request.user.is_staff:
+        return redirect('login')
+    
+    # Get current date and time ranges
+    now = timezone.now()
+    today = now.date()
+    this_week_start = now - timedelta(days=7)
+    this_month_start = now.replace(day=1)
+
+    farmers = User.objects.filter(profile__farmer=True)
+    agronomists = User.objects.filter(profile__agronomist=True)
+    extension_workers = User.objects.filter(profile__extension_worker=True)
+    
+    user_stats = {
+        'total_farmers': farmers.count(),
+        'total_agronomists': agronomists.count(),
+        'total_extension_workers': extension_workers.count(),
+        'total_users': User.objects.filter(is_staff=False, is_superuser=False).count(),
+
+        
+        # Active users this month (users who have logged in or made diagnoses)
+        
+        
+        # Online agronomists (logged in within last 30 minutes)
+        'online_agronomists': agronomists.filter(
+            last_login__gte=now - timedelta(minutes=30)
+        ).count(),
+        
+       
+        
+        
+        # New users this week
+        'new_users_week': User.objects.filter(
+            date_joined__gte=this_week_start
+        ).count(),
+
+          
+    }
+
+    # Get total diagnoses
+    diagnosis_stats = {
+        'total_diagnoses': DiagnosisRequest.objects.count()
+    }
+    avg_accuracy = DiagnosisRequest.objects.filter(
+    status='COMPLETED',
+    confidence_score__isnull=False
+    ).aggregate(Avg('confidence_score'))['confidence_score__avg']
+
+    diagnosis_stats['model_accuracy'] = round(avg_accuracy * 100, 1) if avg_accuracy else 0
+    
+    return render(request, 'dashboard/admin_dashboard.html', {
+        'user_stats': user_stats,
+        'title': 'Admin Dashboard',
+        'diagnosis_stats': diagnosis_stats,
+
+    })
