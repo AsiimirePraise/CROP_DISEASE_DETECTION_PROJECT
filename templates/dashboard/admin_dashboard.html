@@ -3,47 +3,280 @@
 {% block title %}Admin Dashboard{% endblock %}
 
 {% block content %}
-    <h2 class="mb-4">Welcome to the Admin Dashboard</h2>
+<div class="container-fluid">
+    <!-- Dashboard Header -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h1 class="mb-2 fw-bold text-dark">Dashboard Overview</h1>
+            <p class="text-muted mb-0 fs-6">Monitor your crop disease diagnosis system performance</p>
+        </div>
+        <div class="bg-white border px-4 py-2 rounded-3 shadow-sm">
+            <i class="fas fa-calendar-alt text-success me-2"></i>
+            <span class="text-dark fw-medium">{{ current_date|date:"F d, Y" }}</span>
+        </div>
+    </div>
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Manage Users</h5>
-                    <p class="card-text">View, add, and manage all system users.</p>
-                    <a href="{% url 'manage-users' %}" class="btn btn-light">Go</a>
+    <!-- Key Statistics Cards -->
+    <div class="row g-4 mb-5">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden bg-gradient">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted small mb-2 text-uppercase fw-medium">Total Farmers</div>
+                            <div class="h2 mb-0 fw-bold text-dark">{{ user_stats.total_farmers|default:"0" }}</div>
+                            <small class="text-muted">Registered users</small>
+                        </div>
+                        <div class="bg-primary bg-opacity-15 p-3 rounded-4">
+                            <i class="fas fa-seedling text-primary fa-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-primary opacity-75" style="height: 4px;"></div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden bg-gradient">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted small mb-2 text-uppercase fw-medium">Agronomists</div>
+                            <div class="h2 mb-0 fw-bold text-dark">{{ user_stats.total_agronomists|default:"0" }}</div>
+                            <small class="text-muted">Expert advisors</small>
+                        </div>
+                        <div class="bg-success bg-opacity-15 p-3 rounded-4">
+                            <i class="fas fa-user-md text-success fa-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-success opacity-75" style="height: 4px;"></div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden bg-gradient">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted small mb-2 text-uppercase fw-medium">Extension Workers</div>
+                            <div class="h2 mb-0 fw-bold text-dark">{{ user_stats.total_extension_workers|default:"0" }}</div>
+                            <small class="text-muted">Field support</small>
+                        </div>
+                        <div class="bg-warning bg-opacity-15 p-3 rounded-4">
+                            <i class="fas fa-users text-warning fa-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-warning opacity-75" style="height: 4px;"></div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden bg-gradient">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted small mb-2 text-uppercase fw-medium">Total Users</div>
+                            <div class="h2 mb-0 fw-bold text-dark">{{ user_stats.total_users|default:"0" }}</div>
+                            <small class="text-muted">Active accounts</small>
+                        </div>
+                        <div class="bg-info bg-opacity-15 p-3 rounded-4">
+                            <i class="fas fa-globe text-info fa-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-info opacity-75" style="height: 4px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diagnosis Statistics -->
+    <div class="row g-4 mb-4">
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm h-100 bg-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h5 class="text-primary fw-bold mb-1">
+                                <i class="fas fa-microscope me-2"></i>Disease Diagnoses
+                            </h5>
+                            <div class="h1 mb-0 fw-bold text-dark">{{ diagnosis_stats.total_diagnoses|default:"0" }}</div>
+                            <small class="text-muted">Total analyses performed</small>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-4 rounded-4">
+                            <i class="fas fa-chart-line text-primary fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="bg-light p-3 rounded-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-success bg-opacity-10 p-2 rounded-circle me-3">
+                                        <i class="fas fa-arrow-up text-success"></i>
+                                    </div>
+                                    <div>
+                                        <div class="h4 mb-0 fw-bold text-dark">{{ diagnoses_today|default:"0" }}</div>
+                                        <small class="text-muted">Today</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-light p-3 rounded-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-info bg-opacity-10 p-2 rounded-circle me-3">
+                                        <i class="fas fa-clock text-info"></i>
+                                    </div>
+                                    <div>
+                                        <div class="h4 mb-0 fw-bold text-dark">{{ diagnoses_this_week|default:"0" }}</div>
+                                        <small class="text-muted">This week</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card text-white bg-secondary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Reported Issues</h5>
-                    <p class="card-text">Review and resolve reported system issues.</p>
-                    <a href="{% url 'manage-issues' %}" class="btn btn-light">Go</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Image Datasets</h5>
-                    <p class="card-text">Manage uploaded image datasets for training.</p>
-                    <a href="{% url 'manage-datasets' %}" class="btn btn-light">Go</a>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Retrain AI Model</h5>
-                    <p class="card-text">Trigger AI model retraining with new data.</p>
-                    <a href="{% url 'retrain-model' %}" class="btn btn-light">Go</a>
+        <div class="col-xl-6">
+            <div class="card border-0 shadow-sm h-100 bg-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h5 class="text-success fw-bold mb-1">
+                                <i class="fas fa-bullseye me-2"></i>AI Model Performance
+                            </h5>
+                            <div class="h1 mb-0 fw-bold text-dark">{{ diagnosis_stats.model_accuracy|default:"0" }}%</div>
+                            <small class="text-muted">Diagnosis accuracy rate</small>
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-4 rounded-4">
+                            <i class="fas fa-brain text-success fa-2x"></i>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <small class="text-muted">Accuracy Score</small>
+                            <small class="text-muted">{{ diagnosis_stats.model_accuracy|default:"0" }}%</small>
+                        </div>
+                       
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center">
+                                <div class="h5 mb-0 fw-bold text-success">{{ correct_diagnoses|default:"0" }}</div>
+                                <small class="text-muted">Correct</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center">
+                                <div class="h5 mb-0 fw-bold text-warning">{{ pending_reviews|default:"0" }}</div>
+                                <small class="text-muted">Under Review</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- System Health Indicators -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-body p-4 text-center">
+                    <div class="bg-primary bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                        <i class="fas fa-leaf text-primary fa-xl"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">Crop Health Status</h6>
+                    <div class="h4 fw-bold text-success mb-0">Optimal</div>
+                    <small class="text-muted">System monitoring active</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-body p-4 text-center">
+                    <div class="bg-success bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                        <i class="fas fa-shield-alt text-success fa-xl"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">Disease Detection</h6>
+                    <div class="h4 fw-bold text-primary mb-0">Active</div>
+                    <small class="text-muted">AI model operational</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-body p-4 text-center">
+                    <div class="bg-warning bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                        <i class="fas fa-heartbeat text-warning fa-xl"></i>
+                    </div>
+                    <h6 class="fw-bold mb-1">System Health</h6>
+                    <div class="h4 fw-bold text-success mb-0">Healthy</div>
+                    <small class="text-muted">All services running</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1) !important;
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.progress-bar {
+    transition: width 0.8s ease;
+    border-radius: 4px;
+}
+
+.rounded-4 {
+    border-radius: 12px !important;
+}
+
+.text-uppercase {
+    letter-spacing: 0.5px;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.75rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.card-body {
+    border-radius: 12px;
+}
+
+.opacity-75 {
+    opacity: 0.75 !important;
+}
+
+.fa-xl {
+    font-size: 1.5rem;
+}
+
+.fa-2x {
+    font-size: 2rem;
+}
+
+@media (max-width: 768px) {
+    .h1 {
+        font-size: 2rem;
+    }
+    .h2 {
+        font-size: 1.5rem;
+    }
+}
+</style>
 {% endblock %}
