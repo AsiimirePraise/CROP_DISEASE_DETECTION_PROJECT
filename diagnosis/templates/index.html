@@ -123,10 +123,21 @@
 
 <!-- Image Modal -->
 <div id="imageModal" class="modal" style="display: none">
-  <div id="diseaseDetails" style="display: none;"></div>
-  <span class="close-modal" onclick="closeModal()">&times;</span>
-  <img class="modal-content" id="modalImage">
-  <div id="modalCaption" class="text-center mt-2"></div>
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h5>Diagnosis Details</h5>
+      <button class="close-btn" onclick="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="image-container">
+        <img class="modal-image" id="modalImage">
+      </div>
+      <div id="diseaseDetails" class="details-container"></div>
+      <div id="modalCaption" class="upload-info"></div>
+    </div>
+  </div>
 </div>
 
 <!-- Styles -->
@@ -144,7 +155,7 @@
     top: 56px;
     height: calc(100vh - 56px);
     width: 250px;
-    background-color: #2c3e50;
+    background-color:#3d8b40;
     color: white;
     z-index: 1000;
     transition: transform 0.3s ease;
@@ -152,7 +163,7 @@
 
   .sidebar-header {
     padding: 20px;
-    border-bottom: 1px solid #34495e;
+    border-bottom: 1px solid #45a049; 
   }
 
   .sidebar-menu {
@@ -162,7 +173,7 @@
   }
 
   .menu-item {
-    border-bottom: 1px solid #34495e;
+    border-bottom: 1px solid  #45a049;
   }
 
   .menu-link {
@@ -175,12 +186,12 @@
   }
 
   .menu-link:hover {
-    background-color: #34495e;
+    background-color: #45a049;
     color: #ecf0f1;
   }
 
   .menu-item.active .menu-link {
-    background-color: #4caf50;
+    background-color:  #4CAF50; 
     color: white;
   }
 
@@ -269,24 +280,99 @@
   .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 1050;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.9);
+    overflow: auto;
   }
 
-  .modal-content {
-    display: block;
-    margin: auto;
-    max-width: 80%;
-    max-height: 80%;
-    margin-top: 50px;
-    border: 3px solid #4caf50;
+.modal-dialog {
+  background: white;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 700px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-header h5 {
+  margin: 0;
+  color: #2c3e50;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.close-btn:hover {
+  color: #4CAF50;
+}
+
+.image-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 5px;
+  border: 1px solid #dee2e6;
+}
+
+.details-container {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  border-left: 4px solid #4CAF50;
+}
+
+.details-container p {
+  margin-bottom: 8px;
+}
+
+.upload-info {
+  font-size: 0.9rem;
+  color: #6c757d;
+  text-align: right;
+  font-style: italic;
+}
+  .modal-content-container {
+    background: white;
+    padding: 20px;
     border-radius: 8px;
-  }
-
+    max-width: 80%;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 50px auto;
+    position: relative;
+}
+  .disease-info {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-top: 15px;
+    border-left: 4px solid #4CAF50;
+}
+.disease-info p {
+    margin-bottom: 8px;
+}
   .close-modal {
     position: absolute;
     top: 15px;

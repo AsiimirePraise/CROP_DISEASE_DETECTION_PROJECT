@@ -317,8 +317,9 @@ function updateRecentPicturesDisplay() {
                                 <div class="recent-image-container" onclick="showImageModal('${img.id}')">
                                     <img src="${img.src}" alt="Recent Upload" class="img-fluid">
                                     <small class="text-muted d-block text-center mt-1">
-                                        ${new Date(img.timestamp).toLocaleDateString()}
-                                        ${img.diseaseDetails ? `<span class="badge ${getDiseaseBadgeClass(img.diseaseDetails.disease)}">${img.diseaseDetails.disease}</span>` : ''}
+                                       ${new Date(img.timestamp).toLocaleDateString()}
+                                        <span class="badge ${getDiseaseBadgeClass(img.diseaseDetails?.disease)}">
+                                            ${img.diseaseDetails?.disease || 'Unknown'}
                                     </small>
                                 </div>
                             `).join('')}
@@ -358,24 +359,25 @@ function showImageModal(imageId) {
         const caption = document.getElementById('modalCaption');
         const diseaseDetails = document.getElementById('diseaseDetails');
         
-        if (modal && modalImg && caption) {
-            modal.style.display = "block";
+        if (modal && modalImg && caption && diseaseDetails) {
+            
             modalImg.src = image.src;
+            modalImg.style.maxWidth = '100%';
+            modalImg.style.maxHeight = '300px';
             caption.innerHTML = `Uploaded: ${new Date(image.timestamp).toLocaleString()}`;
             
-            if (image.diseaseDetails && diseaseDetails) {
-                diseaseDetails.innerHTML = `
-                    <div class="disease-info mt-3 p-3 border rounded">
-                        <h5>Diagnosis: <span class="${getDiseaseTextClass(image.diseaseDetails.disease)}">${image.diseaseDetails.disease}</span></h5>
-                        <p><strong>Confidence:</strong> ${image.diseaseDetails.confidence}%</p>
-                        <p><strong>Description:</strong> ${image.diseaseDetails.description}</p>
-                        <p><strong>Treatment:</strong> ${image.diseaseDetails.treatment}</p>
-                    </div>
-                `;
-                diseaseDetails.style.display = 'block';
-            } else if (diseaseDetails) {
-                diseaseDetails.style.display = 'none';
-            }
+            // Display disease details
+            diseaseDetails.innerHTML = `
+                 <p><strong>Disease:</strong> ${image.diseaseDetails?.disease || 'Unknown'}</p>
+                <p><strong>Confidence:</strong> ${image.diseaseDetails?.confidence || 'N/A'}%</p>
+                <p><strong>Crop:</strong> ${image.diseaseDetails?.crop || 'Unknown'}</p>
+                <p><strong>Severity:</strong> ${image.diseaseDetails?.severity || 'Unknown'}</p>
+                <p><strong>Description:</strong> ${image.diseaseDetails?.description || 'No description available'}</p>
+                <p><strong>Treatment:</strong> ${image.diseaseDetails?.treatment || 'Consult an expert'}</p>
+            `;
+            
+            
+            modal.style.display = 'block';
         }
     }
 }
@@ -445,6 +447,7 @@ function closeModal() {
     const modal = document.getElementById('imageModal');
     if (modal) {
         modal.style.display = "none";
+        
     }
 }
 
@@ -480,7 +483,7 @@ function initializeImageUpload() {
 window.addEventListener('click', function(event) {
     const modal = document.getElementById('imageModal');
     if (event.target === modal) {
-        modal.style.display = "none";
+        closeModal();
     }
 });
 
