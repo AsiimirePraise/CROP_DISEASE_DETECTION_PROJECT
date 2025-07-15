@@ -1,5 +1,5 @@
 
-# CropCare - Crop Disease Detection System
+# AgroDetect - Crop Disease Detection System
 
 A comprehensive Django web application for crop disease detection using AI/ML, featuring user authentication, IoT integration, analytics, and treatment recommendations.
 

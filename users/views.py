@@ -4,7 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
+from django.contrib.auth.models import User
+from diagnosis.models import DiagnosisRequest
+from recommendations.models import Recommendation
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 def register(request):
@@ -45,21 +50,49 @@ def profile(request):
 def home(request):
     return render(request, 'home.html')
 
+
 @login_required
 def dashboard(request):
-    """Main dashboard that redirects based on user role"""
+    # Superuser gets admin dashboard
+    if request.user.is_superuser:
+        return render(request, 'dashboard/admin_dashboard.html', {'user_role': 'admin'})
+
     try:
-         # Ensure user has a profile
+        # Ensure user has a profile
         if hasattr(request.user, 'profile'):
             user_role = request.user.profile.get_user_role()
         
         if user_role == 'farmer':
-              # Redirect to the diagnosis app's index view
-                return redirect('diagnosis:index')
+            # Redirect to the diagnosis app's index view
+            return redirect('diagnosis:index')
         elif user_role == 'agronomist':
             return render(request, 'dashboard/agronomist_dashboard.html', {'user_role': 'agronomist'})
         elif user_role == 'extension_worker':
-            return render(request, 'dashboard/extension_worker_dashboard.html', {'user_role': 'extension_worker'})
+                farmers = User.objects.filter(profile__farmer=True)
+                # Total number of farmers
+                farmer_count = User.objects.filter(profile__farmer=True).count()
+
+                # Active cases: maybe diagnosis entries with an "active" status
+                active_cases = DiagnosisRequest.objects.all().count()
+
+                # Pending visits or treatment recommendations
+                recommendations = Recommendation.objects.all().count()
+
+                if request.method == 'POST':
+                    farmer_id = request.POST.get('farmer')
+                    if farmer_id:
+                        try:
+                            farmer = User.objects.get(id=farmer_id)
+                        except User.DoesNotExist:
+                            messages.error(request, "Farmer not found.")
+
+                return render(request, 'dashboard/extension_worker_dashboard.html', {
+                    'farmers': farmers,
+                    'farmer_count': farmer_count,
+                    'active_cases': active_cases,
+                    'recommendations': recommendations,
+                    'user_role': 'extension_worker'
+                })
         else:
             messages.error(request, "Please select your role in your profile.")
             return redirect('profile')  # Redirect to profile page to set role
@@ -68,11 +101,10 @@ def dashboard(request):
         messages.error(request, "Please complete your profile setup.")
         return redirect('profile')  # Redirect to profile page
     
-    
 def logout_view(request):
     """
     Logout view - logs out the user and redirects to home page
     """
     logout(request)
     messages.success(request, 'You have been successfully logged out.')
-    return redirect('home') 
+    return redirect('home')
