@@ -157,3 +157,4 @@ def edit_user(request, user_id):
         'title': f'Edit User: {user.username}'
     }
     return render(request, 'adminpanel/edit_user.html', context)
+
