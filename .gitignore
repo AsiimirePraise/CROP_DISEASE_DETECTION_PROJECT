@@ -26,8 +26,11 @@ venv/
 __pycache__/
 *.pyc
 
-
-*.jpg
-*.jpeg
-*.png
-CNN/disease
+# Create or edit .gitignore file
+echo "__pycache__/" >> .gitignore
+echo "*.pyc" >> .gitignore
+echo "*.pyo" >> .gitignore
+echo "*.pyd" >> .gitignore
+echo ".Python" >> .gitignore
+echo "env/" >> .gitignore
+echo "venv/" >> .gitignore
