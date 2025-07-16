@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'adminpanel',
     
     # Local apps
     'users.apps.UsersConfig',
@@ -67,7 +68,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'crop_disease_db',
         'USER': 'postgres',
-        'PASSWORD': '12345',
+        'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '5432',
     }
