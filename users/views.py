@@ -6,13 +6,16 @@ from django.contrib.auth import get_user_model
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 from diagnosis.models import DiagnosisRequest, FarmerDiagnosis
-from recommendations.models import Recommendation
+from recommendations.models import Recommendation, Training
 from django.utils import timezone
 from datetime import timedelta
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.db.models import Count
 import json
+import os
+from django.conf import settings
+from recommendations.forms import TrainingForm
 
 User = get_user_model()
 
@@ -86,7 +89,17 @@ def dashboard(request):
             farmers = User.objects.filter(profile__farmer=True)
             farmer_count = farmers.count()
             active_cases = DiagnosisRequest.objects.all().count()
-            recommendations = Recommendation.objects.all().count()
+            trainings = Training.objects.filter(date__gte=timezone.now().date()).order_by('date')
+
+            # === Load JSON recommendation data ===
+            json_path = os.path.join(settings.BASE_DIR, 'recommendations.json')
+            if os.path.exists(json_path):
+             with open(json_path, 'r') as file:
+              recommendations_data = json.load(file)
+              recommendations = len(recommendations_data)
+            else:
+              recommendations = 0  # Default if file doesn't exist
+
 
             if request.method == 'POST':
                 farmer_id = request.POST.get('farmer')
@@ -100,6 +113,7 @@ def dashboard(request):
                 'farmers': farmers,
                 'farmer_count': farmer_count,
                 'active_cases': active_cases,
+                'trainings': trainings,
                 'recommendations': recommendations,
                 'user_role': 'extension_worker'
             })
@@ -168,6 +182,26 @@ def get_diagnosis_analytics(request):
         ],
         'total_diagnoses': FarmerDiagnosis.objects.count()
     })
+
+@login_required
+def schedule_training(request):
+    if request.method == 'POST':
+        topic = request.POST.get('topic')
+        date = request.POST.get('date')
+        location = request.POST.get('location')
+
+        if topic and date and location:
+            Training.objects.create(
+                topic=topic,
+                date=date,
+                location=location,
+                created_by=request.user  # optional field
+            )
+            messages.success(request, "Training scheduled!")
+        else:
+            messages.error(request, "Please fill all fields.")
+    return redirect('dashboard')  # or the route name for your dashboard
+
 
 def logout_view(request):
     logout(request)
