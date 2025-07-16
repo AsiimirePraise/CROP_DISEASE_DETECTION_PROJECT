@@ -29,10 +29,10 @@ FR10: The system shall maintain a history of users’ crop diagnoses and recomme
 
 FR11: The system shall visualize trends and analytics for farmers, indicating disease patterns and management outcomes over time.
 
-IoT Integration
-FR12: The system shall collect environmental data from connected IoT devices (e.g., soil moisture, temperature sensors).
+#IoT Integration
+#FR12: The system shall collect environmental data from connected IoT devices (e.g., soil moisture, temperature sensors).
 
-FR13: The system shall use real-time IoT data to support disease prediction and advisory recommendations.
+#FR13: The system shall use real-time IoT data to support disease prediction and advisory recommendations.
 
 Admin and Model Management
 FR14: The system shall allow administrators to manage users, reported issues, and system content.
