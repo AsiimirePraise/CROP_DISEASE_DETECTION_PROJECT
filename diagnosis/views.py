@@ -1,4 +1,4 @@
-from django.shortcuts import render # type: ignore
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse # type: ignore
 from keras.models import load_model # type: ignore
 import numpy as np
@@ -11,11 +11,17 @@ import traceback
 import base64 
 from io import BytesIO 
 from django.core.paginator import Paginator
+
+from django.contrib import messages
+
+
+
 from django.db import transaction
-from .models import DiagnosisRequest, Disease, Crop, DiseasePrediction
+from .models import DiagnosisRequest, Disease, Crop, DiseasePrediction, ReportedIssue 
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from .forms import ImageUploadForm
 from django.contrib.auth.decorators import login_required
+
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -198,9 +204,37 @@ def get_recommendations(predicted_class):
 @login_required
 def index(request):
     if request.method == 'POST':
+
+          # Check if this is a report issue request
+        if request.POST.get('action') == 'report_issue':
+            return handle_report_issue(request)
+        
+        try:
+            loaded_model = load_model_once()
+            if loaded_model is None:
+                return JsonResponse({"success": False, "error": f"Model could not be loaded from {MODEL_PATH}."}, status=500)
+
+            disease_db = load_disease_info()
+            if disease_db is None:
+                return JsonResponse({"success": False, "error": f"Disease information could not be loaded from {DISEASE_INFO_PATH}."}, status=500)
+
+            recommendations_db = load_recommendations()
+            if recommendations_db is None:
+                return JsonResponse({"success": False, "error": f"Recommendations could not be loaded from {RECOMMENDATIONS_PATH}."}, status=500)
+
+            if 'crop_image' not in request.FILES:
+                return JsonResponse({"success": False, "error": "No image file provided."}, status=400)
+
+            crop_image = request.FILES['crop_image']
+            allowed_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
+            file_extension = os.path.splitext(crop_image.name)[1].lower()
+            if file_extension not in allowed_extensions:
+                return JsonResponse({"success": False, "error": "Invalid file type. Please upload JPG, PNG, or BMP files."}, status=400)
+
         loaded_model = load_model_once()
         if loaded_model is None:
             return JsonResponse({"success": False, "error": "Model could not be loaded."}, status=500)
+
 
         form = ImageUploadForm(request.POST, request.FILES, request=request)
 
@@ -305,3 +339,113 @@ def prediction_history(request):
     return render(request, 'diagnosis/prediction_history.html', {
         'page_obj': page_obj
     })
+
+def reportIssue(request):
+    
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        # Validation
+        if not title or not description:
+            error_message = 'Both title and description are required.'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')  # Redirect back to index page
+        
+        # Create the reported issue
+        try:
+            ReportedIssue.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                title=title,
+                description=description
+            )
+            
+            success_message = 'Your issue has been reported successfully!'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': success_message
+                })
+            else:
+                messages.success(request, success_message)
+                return redirect('index')  # Redirect back to index page
+                
+        except Exception as e:
+            error_message = 'An error occurred while reporting the issue. Please try again.'
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+    
+    # If GET request, redirect to index page
+    return redirect('index')
+
+#def handle_report_issue(request):
+    if request.method == 'POST' and request.POST.get('action') == 'report_issue':
+        # Handle report issue functionality
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        # Validation
+        if not title or not description:
+            error_message = 'Both title and description are required.'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+        
+        # Create the reported issue (THIS SAVES TO DATABASE)
+        try:
+            ReportedIssue.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                title=title,
+                description=description
+            )
+            
+            success_message = 'Your issue has been reported successfully!'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': success_message
+                })
+            else:
+                messages.success(request, success_message)
+                return redirect('index')
+                
+        except Exception as e:
+            logger.exception("Error creating reported issue:")
+            error_message = 'An error occurred while reporting the issue. Please try again.'
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+    # If not POST or action not report_issue, redirect to index
+    return redirect('index')
