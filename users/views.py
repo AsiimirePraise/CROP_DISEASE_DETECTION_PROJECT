@@ -5,10 +5,12 @@ from django.contrib.auth import logout
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile, User
 from django.contrib.auth.models import User
-from diagnosis.models import DiagnosisRequest
+from diagnosis.models import DiagnosisRequest, FarmerDiagnosis
 from recommendations.models import Recommendation
 from django.utils import timezone
 from datetime import timedelta
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -74,44 +76,59 @@ def dashboard(request):
             total_diagnoses = DiagnosisRequest.objects.count()
 
             active_users_today = User.objects.filter(
-        last_login__gte=today
-    ).distinct().count()
+                last_login__gte=today
+            ).distinct().count()
             
             recommendations = Recommendation.objects.all().count()
 
+            @csrf_exempt
+            def store_diagnosis(request):
+                if request.method == 'POST':
+                    try:
+                        data = json.loads(request.body)
+                        diagnosis = FarmerDiagnosis.objects.create(
+                            farmer=request.user,
+                            image_url=data.get('imageSrc'),
+                            disease_details=data.get('diseaseDetails')
+                        )
+                        return JsonResponse({'status': 'success'})
+                    except Exception as e:
+                        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+                return JsonResponse({'status': 'error'}, status=405)
+
             context = {
-        'diagnoses': total_diagnoses,
-        'active_users': active_users_today,
-        'recommendations': recommendations,
-    }
+                'diagnoses': total_diagnoses,
+                'active_users': active_users_today,
+                'recommendations': recommendations,
+            }
             return render(request, 'dashboard/agronomist_dashboard.html', {'user_role': 'agronomist'})
         
         elif user_role == 'extension_worker':
-                farmers = User.objects.filter(profile__farmer=True)
-                # Total number of farmers
-                farmer_count = User.objects.filter(profile__farmer=True).count()
+            farmers = User.objects.filter(profile__farmer=True)
+            # Total number of farmers
+            farmer_count = User.objects.filter(profile__farmer=True).count()
 
-                # Active cases: maybe diagnosis entries with an "active" status
-                active_cases = DiagnosisRequest.objects.all().count()
+            # Active cases: maybe diagnosis entries with an "active" status
+            active_cases = DiagnosisRequest.objects.all().count()
 
-                # Pending visits or treatment recommendations
-                recommendations = Recommendation.objects.all().count()
+            # Pending visits or treatment recommendations
+            recommendations = Recommendation.objects.all().count()
 
-                if request.method == 'POST':
-                    farmer_id = request.POST.get('farmer')
-                    if farmer_id:
-                        try:
-                            farmer = User.objects.get(id=farmer_id)
-                        except User.DoesNotExist:
-                            messages.error(request, "Farmer not found.")
+            if request.method == 'POST':
+                farmer_id = request.POST.get('farmer')
+                if farmer_id:
+                    try:
+                        farmer = User.objects.get(id=farmer_id)
+                    except User.DoesNotExist:
+                        messages.error(request, "Farmer not found.")
 
-                return render(request, 'dashboard/extension_worker_dashboard.html', {
-                    'farmers': farmers,
-                    'farmer_count': farmer_count,
-                    'active_cases': active_cases,
-                    'recommendations': recommendations,
-                    'user_role': 'extension_worker'
-                })
+            return render(request, 'dashboard/extension_worker_dashboard.html', {
+                'farmers': farmers,
+                'farmer_count': farmer_count,
+                'active_cases': active_cases,
+                'recommendations': recommendations,
+                'user_role': 'extension_worker'
+            })
         else:
             messages.error(request, "Please select your role in your profile.")
             return redirect('profile')  # Redirect to profile page to set role
@@ -120,6 +137,40 @@ def dashboard(request):
         messages.error(request, "Please complete your profile setup.")
         return redirect('profile')  # Redirect to profile page
     
+    
+def get_diagnosis_analytics(request):
+    # Get last 30 days of data
+    from django.utils import timezone
+    from datetime import timedelta
+    from django.db.models import Count
+    
+    time_threshold = timezone.now() - timedelta(days=30)
+    
+    # Disease distribution
+    diseases = FarmerDiagnosis.objects.filter(
+        timestamp__gte=time_threshold
+    ).values('disease_details__predicted_class_name').annotate(
+        count=Count('id')
+    ).order_by('-count')
+    
+    # Recent activity
+    recent = FarmerDiagnosis.objects.filter(
+        timestamp__gte=time_threshold
+    ).order_by('-timestamp')[:10]
+    
+    return JsonResponse({
+        'disease_distribution': list(diseases),
+        'recent_activity': [
+            {
+                'image_url': d.image_url,
+                'disease': d.disease_details.get('predicted_class_name'),
+                'timestamp': d.timestamp
+            } for d in recent
+        ],
+        'total_diagnoses': FarmerDiagnosis.objects.count()
+    })
+    
+
 def logout_view(request):
     """
     Logout view - logs out the user and redirects to home page
