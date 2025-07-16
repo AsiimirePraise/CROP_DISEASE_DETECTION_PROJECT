@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
-from users.models import User  
+import uuid
 
 class Crop(models.Model):
     """Model for different types of crops"""
@@ -47,6 +47,7 @@ class Disease(models.Model):
         return self.name
 
 class DiagnosisRequest(models.Model):
+    
     """Model for diagnosis requests from farmers"""
     class Status(models.TextChoices):
         PENDING = 'PENDING', _('Pending')
@@ -59,6 +60,7 @@ class DiagnosisRequest(models.Model):
         MEDIUM = 'MEDIUM', _('Medium')
         HIGH = 'HIGH', _('High')
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diagnosis_requests')
     crop = models.ForeignKey(Crop, on_delete=models.CASCADE, null=True, blank=True)
     image = models.ImageField(upload_to='diagnosis_images/')
