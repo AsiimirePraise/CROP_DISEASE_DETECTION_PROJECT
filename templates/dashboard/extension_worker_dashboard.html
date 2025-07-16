@@ -98,6 +98,12 @@
                     <canvas id="issueChart" width="400" height="200"></canvas>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-pie"></i> Diagnoses </h5>
+                    <canvas id="diseaseChart" width="400" height="200"></canvas>
+                </div>
+            </div>
         </div>
         
         <!-- Recent Activities -->
@@ -626,7 +632,36 @@
         // Add active class to clicked nav link
         event.target.classList.add('active');
     }
+    async function loadAnalytics() {
+  try {
+    const response = await fetch('/get-diagnosis-analytics/');
+    const data = await response.json();
     
+    // Update charts with this data
+    updateCharts(data);
+  } catch (error) {
+    console.error('Failed to load analytics:', error);
+  }
+}
+
+function updateCharts(analyticsData) {
+  // Example for disease distribution chart
+  const diseaseCtx = document.getElementById('diseaseChart').getContext('2d');
+  new Chart(diseaseCtx, {
+    type: 'pie',
+    data: {
+      labels: analyticsData.disease_distribution.map(d => d.disease_details__predicted_class_name),
+      datasets: [{
+        data: analyticsData.disease_distribution.map(d => d.count),
+        backgroundColor: [
+          '#27ae60', '#3498db', '#f39c12', '#e74c3c', '#9b59b6'
+        ]
+      }]
+    }
+  });
+  
+  // Similar for other charts
+}
     // Chart initialization
     document.addEventListener('DOMContentLoaded', function() {
         // Field Visit Chart

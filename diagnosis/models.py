@@ -199,3 +199,13 @@ class DiseasePrediction(models.Model):
 
     def __str__(self):
         return f"{self.predicted_class} ({self.confidence:.2f}%)"
+    
+    # models.py
+class FarmerDiagnosis(models.Model):
+    farmer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diagnoses')
+    image_url = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    disease_details = models.JSONField()
+    
+    class Meta:
+        ordering = ['-timestamp']

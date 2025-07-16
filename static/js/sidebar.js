@@ -310,7 +310,7 @@ function resetAndShowUpload() {
 }
 
 // Fixed addToRecentImages function - now accepts diseaseDetails as parameter
-function addToRecentImages(imageSrc, diseaseDetails = null) {
+async function addToRecentImages(imageSrc, diseaseDetails = null) {
   let recentImages = JSON.parse(sessionStorage.getItem("recentImages") || "[]")
 
   // Ensure diseaseDetails has required fields
@@ -343,6 +343,24 @@ function addToRecentImages(imageSrc, diseaseDetails = null) {
 
   sessionStorage.setItem("recentImages", JSON.stringify(recentImages))
   // updateRecentPicturesDisplay(); // This will be called when the section is shown
+
+    try {
+    await fetch('/store-diagnosis/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({
+        imageSrc,
+        diseaseDetails: diseaseDetails || {
+          // Default values as before
+        }
+      })
+    });
+  } catch (error) {
+    console.error('Failed to save diagnosis:', error);
+  }
 }
 
 /**
