@@ -1,4 +1,4 @@
-from django.shortcuts import render # type: ignore
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse # type: ignore
 from keras.models import load_model # type: ignore
 import numpy as np
@@ -7,9 +7,21 @@ from django.conf import settings # type: ignore
 import os
 import logging
 import json
+import traceback
 import base64 
 from io import BytesIO 
 from django.core.paginator import Paginator
+
+from django.contrib import messages
+
+
+
+from django.db import transaction
+from .models import DiagnosisRequest, Disease, Crop, DiseasePrediction, ReportedIssue 
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from .forms import ImageUploadForm
+from django.contrib.auth.decorators import login_required
+
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -189,8 +201,14 @@ def get_recommendations(predicted_class):
         return ["Recommendations not available - JSON file could not be loaded."]
     return reco_db.get(predicted_class, ["No specific recommendations found for this disease."])
 
+@login_required
 def index(request):
     if request.method == 'POST':
+
+          # Check if this is a report issue request
+        if request.POST.get('action') == 'report_issue':
+            return handle_report_issue(request)
+        
         try:
             loaded_model = load_model_once()
             if loaded_model is None:
@@ -213,37 +231,77 @@ def index(request):
             if file_extension not in allowed_extensions:
                 return JsonResponse({"success": False, "error": "Invalid file type. Please upload JPG, PNG, or BMP files."}, status=400)
 
-            processed_image_array, image_base64 = preprocess_image(crop_image)
-            if processed_image_array is None:
-                return JsonResponse({"success": False, "error": "Could not process the image."}, status=400)
+        loaded_model = load_model_once()
+        if loaded_model is None:
+            return JsonResponse({"success": False, "error": "Model could not be loaded."}, status=500)
 
-            predictions = loaded_model.predict(processed_image_array)
-            predicted_label = np.argmax(predictions[0])
 
-            if predicted_label >= len(class_names):
-                return JsonResponse({"success": False, "error": f"Invalid prediction index {predicted_label}. Model predicted class outside expected range."}, status=500)
+        form = ImageUploadForm(request.POST, request.FILES, request=request)
 
-            predicted_class_name = class_names.get(predicted_label, "Unknown")
-            confidence = float(predictions[0][predicted_label]) * 100
+        if not form.is_valid():
+            return JsonResponse({
+                "success": False,
+                "error": form.errors.as_json()
+            }, status=400)
 
-            disease_info = get_disease_info(predicted_class_name, confidence)
-            recommendations = get_recommendations(predicted_class_name)
+        try:
+            with transaction.atomic():
+                diagnosis_request = form.save()  # Only save ONCE, and this sets the user too
 
-            response_data = {
-                "success": True,
-                "image_url": image_base64, # Base64 string of the uploaded image
-                "predicted_class_name": predicted_class_name,
-                "confidence": round(confidence, 2),
-                "disease_info": disease_info,
-                "recommendations": recommendations
-            }
-            return JsonResponse(response_data)
+                # Get the uploaded image
+                crop_image = form.cleaned_data['image']
+                processed_image_array, image_base64 = preprocess_image(crop_image)
+
+                # Predict
+                predictions = loaded_model.predict(processed_image_array)
+                predicted_label = np.argmax(predictions[0])
+                predicted_class_name = class_names.get(predicted_label, "Unknown")
+                confidence = float(predictions[0][predicted_label]) * 100
+
+                # Disease info & recommendations
+                disease_info = get_disease_info(predicted_class_name, confidence)
+                recommendations = get_recommendations(predicted_class_name)
+
+                # Update diagnosis with results
+                diagnosis_request.status = DiagnosisRequest.Status.COMPLETED
+                diagnosis_request.confidence_score = confidence / 100
+                diagnosis_request.severity = disease_info['severity']
+                diagnosis_request.notes = f"Auto-detected as {predicted_class_name}"
+                diagnosis_request.save()  # Save updated fields
+
+                # Create prediction
+                DiseasePrediction.objects.create(
+                    user=request.user,
+                    image=crop_image,
+                    predicted_class=predicted_class_name,
+                    confidence=confidence,
+                    disease_info=disease_info,
+                    recommendations=recommendations,
+                    severity=disease_info['severity'],
+                    diagnosis_request=diagnosis_request
+                )
+
+                return JsonResponse({
+                    "success": True,
+                    "image_url": image_base64,
+                    "predicted_class_name": predicted_class_name,
+                    "confidence": round(confidence, 2),
+                    "disease_info": disease_info,
+                    "recommendations": recommendations,
+                    "diagnosis_id": diagnosis_request.id
+                })
 
         except Exception as e:
-            logger.exception("Error during prediction:") # Log full traceback
-            return JsonResponse({"success": False, "error": f"An internal server error occurred: {str(e)}"}, status=500)
+            logger.error(f"Error in diagnosis: {traceback.format_exc()}")
+            return JsonResponse({
+                "success": False,
+                "error": "Failed to process diagnosis",
+                "detail": str(e)
+            }, status=500)
 
-    return render(request, 'index.html')
+    else:
+        form = ImageUploadForm()
+    return render(request, 'index.html', {'form': form})
 
 def get_prediction_detail(request, prediction_id):
     """API endpoint to get prediction details"""
@@ -281,3 +339,113 @@ def prediction_history(request):
     return render(request, 'diagnosis/prediction_history.html', {
         'page_obj': page_obj
     })
+
+def reportIssue(request):
+    
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        # Validation
+        if not title or not description:
+            error_message = 'Both title and description are required.'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')  # Redirect back to index page
+        
+        # Create the reported issue
+        try:
+            ReportedIssue.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                title=title,
+                description=description
+            )
+            
+            success_message = 'Your issue has been reported successfully!'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': success_message
+                })
+            else:
+                messages.success(request, success_message)
+                return redirect('index')  # Redirect back to index page
+                
+        except Exception as e:
+            error_message = 'An error occurred while reporting the issue. Please try again.'
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+    
+    # If GET request, redirect to index page
+    return redirect('index')
+
+#def handle_report_issue(request):
+    if request.method == 'POST' and request.POST.get('action') == 'report_issue':
+        # Handle report issue functionality
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        # Validation
+        if not title or not description:
+            error_message = 'Both title and description are required.'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+        
+        # Create the reported issue (THIS SAVES TO DATABASE)
+        try:
+            ReportedIssue.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                title=title,
+                description=description
+            )
+            
+            success_message = 'Your issue has been reported successfully!'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': success_message
+                })
+            else:
+                messages.success(request, success_message)
+                return redirect('index')
+                
+        except Exception as e:
+            logger.exception("Error creating reported issue:")
+            error_message = 'An error occurred while reporting the issue. Please try again.'
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+    # If not POST or action not report_issue, redirect to index
+    return redirect('index')

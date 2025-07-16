@@ -174,8 +174,8 @@ function handleMenuClicks() {
 function hideAllSections() {
   const sections = document.querySelectorAll(".content-section")
   sections.forEach((section) => {
-    section.style.display = "none"
-  })
+    section.style.display = "none";
+  });
 }
 
 function showSection(sectionId) {
@@ -196,6 +196,7 @@ function showCommonDiseases() {
   // Load content dynamically (as per your original script)
   const section = document.getElementById("common-diseases")
   if (section) {
+    section.innerHTML = "" // Clear previous content
     section.innerHTML = `
             <div class="card shadow-lg border-0">
                 <div class="card-body p-5">
@@ -272,8 +273,12 @@ function showCommonDiseases() {
 }
 
 function showRecentPictures() {
-  showSection("recent-pictures")
-  updateRecentPicturesDisplay() // Call this to refresh the display
+  showSection("recent-pictures");
+  const section = document.getElementById("recent-pictures");
+  if (section) {
+    section.innerHTML = ""; // Clear the section first
+  }
+  updateRecentPicturesDisplay(); // Then update the display
 }
 
 function resetForm() {
@@ -382,59 +387,52 @@ function getDisplayDiseaseName(fullPredictedName) {
   return fullPredictedName.replace(/_/g, " ")
 }
 
-function updateRecentPicturesDisplay() {
-  const recentImages = JSON.parse(sessionStorage.getItem("recentImages") || "[]")
-  const recentPicturesSection = document.getElementById("recent-pictures")
 
-  // --- DEBUGGING LOG ---
-  console.log("Recent Images from sessionStorage:", recentImages)
-  // --- END DEBUGGING LOG ---
+function updateRecentPicturesDisplay() {
+  const recentImages = JSON.parse(sessionStorage.getItem("recentImages") || "[]");
+  const recentPicturesSection = document.getElementById("recent-pictures");
 
   if (recentPicturesSection) {
+    // Clear existing content (already done in showRecentPictures)
+    
     if (recentImages.length > 0) {
       recentPicturesSection.innerHTML = `
-              <div class="card shadow-lg border-0">
-                  <div class="card-body p-5">
-                      <h3 class="card-title text-center mb-4 display-6"><i class="fas fa-images me-3"></i> Recent Pictures</h3>
-                      <div class="alert alert-info text-center mb-4">
-                          <i class="fas fa-info-circle me-2"></i> Click on any image to view detailed prediction results.
-                      </div>
-                      <div class="image-grid">
-                          ${recentImages
-                            .map(
-                              (img) => `
-                              <div class="recent-image-container" onclick="showImageModal('${img.id}')">
-                                  <img src="${img.src}" alt="Recent Upload" class="img-fluid">
-                                  <small class="text-muted d-block text-center mt-1">
-                                      ${new Date(img.timestamp).toLocaleDateString()}
-                                      <span class="badge ${getDiseaseBadgeClass(img.diseaseDetails?.predicted_class_name || "Unknown")}">
-                                          ${getDisplayDiseaseName(img.diseaseDetails?.predicted_class_name)}
-                                      </span>
-                                  </small>
-                              </div>
-                          `,
-                            )
-                            .join("")}
-                      </div>
-                  </div>
-              </div>
-          `
+        <div class="card shadow-lg border-0">
+          <div class="card-body p-5">
+            <h3 class="card-title text-center mb-4 display-6"><i class="fas fa-images me-3"></i> Recent Pictures</h3>
+            <div class="alert alert-info text-center mb-4">
+              <i class="fas fa-info-circle me-2"></i> Click on any image to view detailed prediction results.
+            </div>
+            <div class="image-grid">
+              ${recentImages.map(img => `
+                <div class="recent-image-container" onclick="showImageModal('${img.id}')">
+                  <img src="${img.src}" alt="Recent Upload" class="img-fluid">
+                  <small class="text-muted d-block text-center mt-1">
+                    ${new Date(img.timestamp).toLocaleDateString()}
+                    <span class="badge ${getDiseaseBadgeClass(img.diseaseDetails?.predicted_class_name || "Unknown")}">
+                      ${getDisplayDiseaseName(img.diseaseDetails?.predicted_class_name)}
+                    </span>
+                  </small>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </div>`;
     } else {
       recentPicturesSection.innerHTML = `
-              <div class="card shadow-lg border-0">
-                  <div class="card-body text-center p-5">
-                      <h3 class="card-title text-center mb-4 display-6"><i class="fas fa-images me-3"></i> Recent Pictures</h3>
-                      <div class="alert alert-info mb-4">
-                          <i class="fas fa-info-circle me-2"></i> Your recently uploaded images will appear here.
-                      </div>
-                      <div class="my-5 py-4">
-                          <i class="fas fa-image fa-5x text-muted mb-4"></i>
-                          <p class="text-muted fs-5">No recent images found.</p>
-                          <p class="text-muted fs-6">Upload an image to get started!</p>
-                      </div>
-                  </div>
-              </div>
-          `
+        <div class="card shadow-lg border-0">
+          <div class="card-body text-center p-5">
+            <h3 class="card-title text-center mb-4 display-6"><i class="fas fa-images me-3"></i> Recent Pictures</h3>
+            <div class="alert alert-info mb-4">
+              <i class="fas fa-info-circle me-2"></i> Your recently uploaded images will appear here.
+            </div>
+            <div class="my-5 py-4">
+              <i class="fas fa-image fa-5x text-muted mb-4"></i>
+              <p class="text-muted fs-5">No recent images found.</p>
+              <p class="text-muted fs-6">Upload an image to get started!</p>
+            </div>
+          </div>
+        </div>`;
     }
   }
 }
@@ -657,3 +655,106 @@ function initializeFormSubmission() {
     })
   }
 }
+
+// Function to show the report issue section
+function showReportIssue() {
+  // Hide all other sections
+  document.querySelectorAll('.content-section').forEach(section => {
+    section.style.display = 'none';
+  });
+  
+  // Show the report issue section
+  document.getElementById('report-issue-section').style.display = 'block';
+  
+  // Update active menu item
+  document.querySelectorAll('.menu-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  
+  // Add active class to the clicked menu item
+  event.target.closest('.menu-item').classList.add('active');
+  
+  // Clear any previous messages
+  const messageContainer = document.getElementById('message-container');
+  if (messageContainer) {
+    messageContainer.innerHTML = '';
+  }
+}
+
+function showMessage(message, type = 'success') {
+  const messageContainer = document.getElementById('message-container');
+  if (!messageContainer) return;
+  
+  const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+  
+  messageContainer.innerHTML = `
+    <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  `;
+  
+  // Auto-dismiss after 5 seconds
+  setTimeout(() => {
+    const alert = messageContainer.querySelector('.alert');
+    if (alert) {
+      const bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    }
+  }, 5000);
+}
+
+// Handle form submission with AJAX
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('report-issue-form');
+  const submitBtn = document.getElementById('submit-btn');
+  
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Get form data
+      const formData = new FormData(this);
+      
+      // Disable submit button
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+      }
+      
+      // Send AJAX request
+      fetch(this.action, {  // Uses the form's action URL
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          showMessage(data.message, 'success');
+          form.reset();
+        } else {
+          showMessage(data.message, 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showMessage('An error occurred while submitting the report. Please try again.', 'error');
+      })
+      .finally(() => {
+        // Re-enable submit button
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Report';
+        }
+      });
+    });
+  }
+});

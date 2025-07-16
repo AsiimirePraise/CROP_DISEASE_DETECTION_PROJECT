@@ -45,6 +45,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'CropDiseaseDetector.urls'
 
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -66,6 +68,9 @@ WSGI_APPLICATION = 'CropDiseaseDetector.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+
+        
+
         'NAME': 'crop_disease_db',
         'USER': 'postgres',
         'PASSWORD': 'root',
