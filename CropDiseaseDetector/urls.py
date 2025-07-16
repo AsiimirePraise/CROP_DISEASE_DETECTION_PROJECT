@@ -29,6 +29,7 @@ urlpatterns = [
     path('recommendations/', include('recommendations.urls')),
     path('predictions/', views.prediction_history, name='prediction_history'),
     path('predictions/<int:prediction_id>/', views.get_prediction_detail, name='prediction_detail'),
+    path('users/', include('users.urls')),
     
     #path('profile/', account_views.profile, name='profile'),
     # Password reset URLs

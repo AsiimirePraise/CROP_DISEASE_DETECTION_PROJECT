@@ -44,6 +44,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'CropDiseaseDetector.urls'
 
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
