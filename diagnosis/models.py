@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from users.models import User  
 
 class Crop(models.Model):
     """Model for different types of crops"""
@@ -165,3 +166,24 @@ class TreatmentRecommendation(models.Model):
 
     def __str__(self):
         return f"Treatment for {self.disease.name} - Diagnosis #{self.diagnosis_request.id}"
+    
+class DiseasePrediction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    image = models.ImageField(upload_to='prediction_images/')
+    predicted_class = models.CharField(max_length=100)
+    confidence = models.FloatField()
+    disease_info = models.JSONField()  # Stores the disease info dictionary
+    recommendations = models.JSONField()  # Stores recommendations list
+    created_at = models.DateTimeField(auto_now_add=True)
+    severity = models.CharField(max_length=20)
+    
+    # Optional: Link to diagnosis request if applicable
+    diagnosis_request = models.ForeignKey(
+        DiagnosisRequest, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True
+    )
+
+    def __str__(self):
+        return f"{self.predicted_class} ({self.confidence:.2f}%)"
