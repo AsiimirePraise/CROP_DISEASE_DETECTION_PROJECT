@@ -34,11 +34,6 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#cases" onclick="showSection('cases')">
-                    <i class="fas fa-clipboard-list"></i> Review Cases
-                </a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link" href="#recommendations" onclick="showSection('recommendations')">
                     <i class="fas fa-prescription-bottle"></i> Recommendations & Environmental Data
                 </a>
@@ -46,11 +41,6 @@
             <li class="nav-item">
                 <a class="nav-link" href="#history" onclick="showSection('history')">
                     <i class="fas fa-history"></i> Diagnosis History
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#reports" onclick="showSection('reports')">
-                    <i class="fas fa-file-alt"></i> Reports
                 </a>
             </li>
             <hr style="border-color: rgba(255,255,255,0.2);">
@@ -76,25 +66,25 @@
             <div class="row mb-4">
                 <div class="col-md-3">
                     <div class="stats-card text-center">
-                        <div class="stats-number" style="color: #3498db;">1,247</div>
+                        <div class="stats-number" style="color: #3498db;">{{ diagnoses }}</div>
                         <div class="stats-label">Total Diagnoses</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card text-center">
-                        <div class="stats-number" style="color: #27ae60;">89</div>
+                        <div class="stats-number" style="color: #27ae60;"> {{ active_users_today }}</div>
                         <div class="stats-label">Active Users Today</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card text-center">
-                        <div class="stats-number" style="color: #e74c3c;">23</div>
+                        <div class="stats-number" style="color: #e74c3c;">{{ active_cases }}</div>
                         <div class="stats-label">Pending Reviews</div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card text-center">
-                        <div class="stats-number" style="color: #f39c12;">156</div>
+                        <div class="stats-number" style="color: #f39c12;">{{ recommendations }}</div>
                         <div class="stats-label">Recommendations</div>
                     </div>
                 </div>
@@ -200,48 +190,6 @@
             </div>
         </div>
         
-        <!-- Cases Section -->
-        <div id="cases" class="content-section" style="display: none;">
-            <h3><i class="fas fa-clipboard-list"></i> Review Cases</h3>
-            <div class="chart-container">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Case ID</th>
-                                <th>Farmer</th>
-                                <th>Crop</th>
-                                <th>Disease</th>
-                                <th>Severity</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>#001</td>
-                                <td>John Mugisha</td>
-                                <td>Maize</td>
-                                <td>Leaf Blight</td>
-                                <td><span class="disease-severity severity-high">High</span></td>
-                                <td>2025-07-10</td>
-                                <td><button class="btn btn-sm btn-custom">Review</button></td>
-                            </tr>
-                            <tr>
-                                <td>#002</td>
-                                <td>Mary Nakato</td>
-                                <td>Beans</td>
-                                <td>Rust</td>
-                                <td><span class="disease-severity severity-medium">Medium</span></td>
-                                <td>2025-07-09</td>
-                                <td><button class="btn btn-sm btn-custom">Review</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
       <!-- Recommendations Section -->
 <div id="recommendations" class="content-section" style="display: none;">
     <h3><i class="fas fa-prescription-bottle"></i> Recommendations & Environmental Data</h3>
@@ -280,15 +228,41 @@
         <div id="history" class="content-section" style="display: none;">
             <h3><i class="fas fa-history"></i> Diagnosis History</h3>
             <div class="chart-container">
-                <p>View complete history of all diagnoses and treatments.</p>
-            </div>
+                <div class="predictions-list">
+                  {% for prediction in page_obj %}
+                    <div class="prediction-card">
+                      <div class="prediction-image">
+                          <img src="{{ prediction.image.url }}" alt="Prediction image" width="100">
+                      </div>
+                   <div class="prediction-info">
+            <h3>{{ prediction.predicted_class }}</h3>
+            <p>Confidence: {{ prediction.confidence }}%</p>
+            <p>Severity: {{ prediction.severity }}</p>
+            <p>Date: {{ prediction.created_at }}</p>
+            <a href="{% url 'prediction_detail' prediction.id %}">View Details</a>
         </div>
-        
-        <!-- Reports Section -->
-        <div id="reports" class="content-section" style="display: none;">
-            <h3><i class="fas fa-file-alt"></i> Reports</h3>
-            <div class="chart-container">
-                <p>Generate and view comprehensive reports on disease patterns and treatment outcomes.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+                <p>View complete history of all diagnoses and treatments.</p>
             </div>
         </div>
     </div>
@@ -497,9 +471,9 @@
             new Chart(regionCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Central', 'Eastern', 'Western', 'Northern'],
+                    labels: ['Kampala', 'Wakiso', 'Mbale', 'Pakwach'],
                     datasets: [{
-                        label: 'Cases',
+                        label: 'Users',
                         data: [45, 32, 28, 19],
                         backgroundColor: '#3498db'
                     }]

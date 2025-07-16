@@ -9,6 +9,7 @@ import logging
 import json
 import base64 
 from io import BytesIO 
+from django.core.paginator import Paginator
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -243,3 +244,40 @@ def index(request):
             return JsonResponse({"success": False, "error": f"An internal server error occurred: {str(e)}"}, status=500)
 
     return render(request, 'index.html')
+
+def get_prediction_detail(request, prediction_id):
+    """API endpoint to get prediction details"""
+    try:
+        prediction = DiseasePrediction.objects.get(id=prediction_id)
+        data = {
+            'id': prediction.id,
+            'image_url': prediction.image.url if prediction.image else None,
+            'predicted_class': prediction.predicted_class,
+            'confidence': prediction.confidence,
+            'disease_info': prediction.disease_info,
+            'recommendations': prediction.recommendations,
+            'created_at': prediction.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            'severity': prediction.severity
+        }
+        return JsonResponse({'success': True, 'data': data})
+    
+    except DiseasePrediction.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Prediction not found'}, status=404)
+    
+    from django.shortcuts import render
+from django.core.paginator import Paginator
+from .models import DiseasePrediction  # Make sure this model exists
+
+def prediction_history(request):
+    """View to display prediction history"""
+    # Get all predictions ordered by most recent
+    predictions = DiseasePrediction.objects.all().order_by('-created_at')
+    
+    # Add pagination (10 items per page)
+    paginator = Paginator(predictions, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'diagnosis/prediction_history.html', {
+        'page_obj': page_obj
+    })
