@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from users.models import User  
 
 class Crop(models.Model):
@@ -199,3 +200,20 @@ class DiseasePrediction(models.Model):
 
     def __str__(self):
         return f"{self.predicted_class} ({self.confidence:.2f}%)"
+    
+class ReportedIssue(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('resolved', 'Resolved'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    admin_notes = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"Issue #{self.id} - {self.title} ({self.status})"

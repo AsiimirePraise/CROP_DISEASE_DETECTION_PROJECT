@@ -65,7 +65,7 @@ WSGI_APPLICATION = 'CropDiseaseDetector.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'crop_disease_db',
+        'NAME': 'crop_disease_db2',
         'USER': 'postgres',
         'PASSWORD': '12345',
         'HOST': 'localhost',

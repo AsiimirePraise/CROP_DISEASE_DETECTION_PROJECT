@@ -1,4 +1,4 @@
-from django.shortcuts import render # type: ignore
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse # type: ignore
 from keras.models import load_model # type: ignore
 import numpy as np
@@ -10,6 +10,10 @@ import json
 import base64 
 from io import BytesIO 
 from django.core.paginator import Paginator
+from .models import DiseasePrediction, ReportedIssue 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -191,6 +195,10 @@ def get_recommendations(predicted_class):
 
 def index(request):
     if request.method == 'POST':
+          # Check if this is a report issue request
+        if request.POST.get('action') == 'report_issue':
+            return handle_report_issue(request)
+        
         try:
             loaded_model = load_model_once()
             if loaded_model is None:
@@ -281,3 +289,113 @@ def prediction_history(request):
     return render(request, 'diagnosis/prediction_history.html', {
         'page_obj': page_obj
     })
+
+def reportIssue(request):
+    
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        # Validation
+        if not title or not description:
+            error_message = 'Both title and description are required.'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')  # Redirect back to index page
+        
+        # Create the reported issue
+        try:
+            ReportedIssue.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                title=title,
+                description=description
+            )
+            
+            success_message = 'Your issue has been reported successfully!'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': success_message
+                })
+            else:
+                messages.success(request, success_message)
+                return redirect('index')  # Redirect back to index page
+                
+        except Exception as e:
+            error_message = 'An error occurred while reporting the issue. Please try again.'
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+    
+    # If GET request, redirect to index page
+    return redirect('index')
+
+#def handle_report_issue(request):
+    if request.method == 'POST' and request.POST.get('action') == 'report_issue':
+        # Handle report issue functionality
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+        
+        # Validation
+        if not title or not description:
+            error_message = 'Both title and description are required.'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+        
+        # Create the reported issue (THIS SAVES TO DATABASE)
+        try:
+            ReportedIssue.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                title=title,
+                description=description
+            )
+            
+            success_message = 'Your issue has been reported successfully!'
+            
+            # Check if it's an AJAX request
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'message': success_message
+                })
+            else:
+                messages.success(request, success_message)
+                return redirect('index')
+                
+        except Exception as e:
+            logger.exception("Error creating reported issue:")
+            error_message = 'An error occurred while reporting the issue. Please try again.'
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'message': error_message
+                })
+            else:
+                messages.error(request, error_message)
+                return redirect('index')
+    # If not POST or action not report_issue, redirect to index
+    return redirect('index')
