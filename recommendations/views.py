@@ -4,6 +4,7 @@ from django.contrib import messages
 #from diagnosis.models import diagnosis
 from .models import Recommendation, SavedRecommendation
 #from .forms import RecommendationForm 
+from django.core.paginator import Paginator
 
 import requests
 from django.conf import settings
@@ -35,3 +36,15 @@ def get_weather_data(request):
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+def prediction_history(request):
+    """View to display prediction history"""
+    predictions = DiseasePrediction.objects.all().order_by('-created_at')
+    
+    # Pagination
+    paginator = Paginator(predictions, 10)  # Show 10 predictions per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'prediction_history.html', {'page_obj': page_obj})
+
