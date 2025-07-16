@@ -19,13 +19,16 @@ from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
+from diagnosis import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),  # Include the URLs from the users app
     path('', include('diagnosis.urls')),  # This handles the root URL
-   path('adminpanel/', include('adminpanel.urls')),
+    path('adminpanel/', include('adminpanel.urls')),
     path('recommendations/', include('recommendations.urls')),
+    path('predictions/', views.prediction_history, name='prediction_history'),
+    path('predictions/<int:prediction_id>/', views.get_prediction_detail, name='prediction_detail'),
     
     #path('profile/', account_views.profile, name='profile'),
     # Password reset URLs

@@ -3,10 +3,12 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
-from .models import Profile
+from .models import Profile, User
 from django.contrib.auth.models import User
 from diagnosis.models import DiagnosisRequest
 from recommendations.models import Recommendation
+from django.utils import timezone
+from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -65,8 +67,25 @@ def dashboard(request):
         if user_role == 'farmer':
             # Redirect to the diagnosis app's index view
             return redirect('diagnosis:index')
+        
         elif user_role == 'agronomist':
+            today = timezone.now().date()
+
+            total_diagnoses = DiagnosisRequest.objects.count()
+
+            active_users_today = User.objects.filter(
+        last_login__gte=today
+    ).distinct().count()
+            
+            recommendations = Recommendation.objects.all().count()
+
+            context = {
+        'diagnoses': total_diagnoses,
+        'active_users': active_users_today,
+        'recommendations': recommendations,
+    }
             return render(request, 'dashboard/agronomist_dashboard.html', {'user_role': 'agronomist'})
+        
         elif user_role == 'extension_worker':
                 farmers = User.objects.filter(profile__farmer=True)
                 # Total number of farmers

@@ -30,16 +30,13 @@ def manage_users(request):
 
 @admin_required
 def manage_issues(request):
-    from diagnosis.models import Issue
-    issues = Issue.objects.all()
-    return render(request, 'adminpanel/manage_issues.html', {'issues': issues})
+    
+    return render(request, 'adminpanel/manage_issues.html')
 
 @admin_required
 def manage_datasets(request):
-    # Replace with your actual Dataset model
-    from yourapp.models import ImageDataset
-    datasets = ImageDataset.objects.all()
-    return render(request, 'adminpanel/manage_datasets.html', {'datasets': datasets})
+    
+    return render(request, 'adminpanel/manage_datasets.html')
 
 @admin_required
 def retrain_model(request):
