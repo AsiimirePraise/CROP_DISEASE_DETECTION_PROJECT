@@ -1,0 +1,306 @@
+{% extends 'adminpanel/base_admin.html' %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .image-thumbnail {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+    .dataset-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .dataset-header {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .dataset-body {
+        padding: 20px;
+    }
+    .badge-verified {
+        background-color: #28a745;
+    }
+    .badge-unverified {
+        background-color: #6c757d;
+    }
+    .badge-correct {
+        background-color: #17a2b8;
+    }
+    .badge-incorrect {
+        background-color: #dc3545;
+    }
+    .action-buttons .btn {
+        margin-right: 5px;
+    }
+    .tab-content {
+        padding: 20px 0;
+    }
+    .nav-tabs .nav-link.active {
+        font-weight: bold;
+        border-bottom: 3px solid #0d6efd;
+    }
+    .upload-form {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .prediction-details {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mb-4">Dataset Management</h1>
+    
+    <ul class="nav nav-tabs" id="datasetTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="farmer-uploads-tab" data-bs-toggle="tab" data-bs-target="#farmer-uploads" type="button" role="tab">Farmer Uploads</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="training-images-tab" data-bs-toggle="tab" data-bs-target="#training-images" type="button" role="tab">Training Images</button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="datasetTabsContent">
+        <!-- Farmer Uploads Tab -->
+        <div class="tab-pane fade show active" id="farmer-uploads" role="tabpanel">
+            <div class="d-flex justify-content-between mb-3">
+                <h3>Farmer Uploads</h3>
+                <button class="btn btn-primary" onclick="exportFarmerUploads()">
+                    <i class="fas fa-file-export me-2"></i>Export to CSV
+                </button>
+            </div>
+            
+            <div class="row">
+                {% for upload in farmer_uploads %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="dataset-card">
+                        <div class="dataset-header d-flex justify-content-between align-items-center">
+                            <span class="badge {% if upload.verified %}badge-verified{% else %}badge-unverified{% endif %}">
+                                {% if upload.verified %}Verified{% else %}Unverified{% endif %}
+                            </span>
+                            <small class="text-muted">{{ upload.upload_date|date:"M d, Y H:i" }}</small>
+                        </div>
+                        <div class="dataset-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="{{ upload.image.url }}" alt="Upload" class="image-thumbnail img-fluid">
+                                </div>
+                                <div class="col-md-8">
+                                    <h5>{{ upload.crop_type }} - {{ upload.disease }}</h5>
+                                    <p class="mb-1"><strong>Confidence:</strong> {{ upload.confidence|floatformat:2 }}%</p>
+                                    <p class="mb-1"><strong>Severity:</strong> {{ upload.severity }}</p>
+                                    
+                                    {% if upload.verified %}
+                                        <span class="badge {% if upload.correct_prediction %}badge-correct{% else %}badge-incorrect{% endif %}">
+                                            {% if upload.correct_prediction %}Correct{% else %}Incorrect{% endif %}
+                                        </span>
+                                    {% endif %}
+                                    
+                                    <div class="action-buttons mt-2">
+                                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detailsModal{{ upload.id }}">
+                                            <i class="fas fa-eye"></i> Details
+                                        </button>
+                                        {% if not upload.verified %}
+                                            <button class="btn btn-sm btn-success" onclick="verifyUpload('{{ upload.id }}', true)">
+                                                <i class="fas fa-check"></i> Correct
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" onclick="verifyUpload('{{ upload.id }}', false)">
+                                                <i class="fas fa-times"></i> Incorrect
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details Modal -->
+                    <div class="modal fade" id="detailsModal{{ upload.id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Upload Details</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <img src="{{ upload.image.url }}" alt="Upload" class="img-fluid rounded">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="prediction-details">
+                                                <h5>{{ upload.crop_type }} - {{ upload.disease }}</h5>
+                                                <p><strong>Confidence:</strong> {{ upload.confidence|floatformat:2 }}%</p>
+                                                <p><strong>Severity:</strong> {{ upload.severity }}</p>
+                                                <p><strong>Primary Affected Part:</strong> {{ upload.primary_affected_part }}</p>
+                                                <p><strong>Affected Parts:</strong> {{ upload.affected_parts|join:", " }}</p>
+                                                <p><strong>Description:</strong> {{ upload.description }}</p>
+                                                <p><strong>Symptoms:</strong> {{ upload.symptoms }}</p>
+                                                
+                                                {% if upload.verified %}
+                                                    <div class="alert {% if upload.correct_prediction %}alert-success{% else %}alert-danger{% endif %} mt-3">
+                                                        <strong>Verification:</strong> 
+                                                        {% if upload.correct_prediction %}Correct prediction{% else %}Incorrect prediction{% endif %}
+                                                        {% if upload.admin_notes %}<p class="mb-0 mt-2"><strong>Notes:</strong> {{ upload.admin_notes }}</p>{% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    {% if not upload.verified %}
+                                        <button type="button" class="btn btn-success" onclick="verifyUpload('{{ upload.id }}', true)">
+                                            <i class="fas fa-check me-1"></i> Mark as Correct
+                                        </button>
+                                        <button type="button" class="btn btn-danger" onclick="verifyUpload('{{ upload.id }}', false)">
+                                            <i class="fas fa-times me-1"></i> Mark as Incorrect
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">No farmer uploads found.</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Training Images Tab -->
+        <div class="tab-pane fade" id="training-images" role="tabpanel">
+            <div class="d-flex justify-content-between mb-3">
+                <h3>Training Images</h3>
+                <button class="btn btn-primary" onclick="exportTrainingImages()">
+                    <i class="fas fa-file-export me-2"></i>Export to CSV
+                </button>
+            </div>
+            
+            <div class="upload-form mb-4">
+                <h4>Upload New Training Image</h4>
+                <form id="trainingImageForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="image" class="form-label">Image</label>
+                            <input type="file" class="form-control" id="image" name="image" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="label" class="form-label">Label (e.g., Apple___Apple_scab)</label>
+                            <input type="text" class="form-control" id="label" name="label" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-upload me-2"></i>Upload Image
+                    </button>
+                </form>
+            </div>
+            
+            <div class="row">
+                {% for image in training_images %}
+                <div class="col-md-4 col-lg-3 mb-4">
+                    <div class="dataset-card">
+                        <div class="dataset-header">
+                            <span class="badge {% if image.verified %}badge-verified{% else %}badge-unverified{% endif %}">
+                                {% if image.verified %}Verified{% else %}Unverified{% endif %}
+                            </span>
+                        </div>
+                        <div class="dataset-body text-center">
+                            <img src="{{ image.image.url }}" alt="Training Image" class="image-thumbnail img-fluid mb-2">
+                            <h6>{{ image.label }}</h6>
+                            <small class="text-muted">Uploaded: {{ image.upload_date|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">No training images found.</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Verify farmer upload
+    function verifyUpload(uploadId, isCorrect) {
+        const notes = prompt("Enter any notes about this verification:");
+        
+        fetch(`/adminpanel/verify-upload/${uploadId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: `correct_prediction=${isCorrect}&admin_notes=${encodeURIComponent(notes || '')}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Error verifying upload');
+            }
+        });
+    }
+    
+    // Export farmer uploads to CSV
+    function exportFarmerUploads() {
+        window.location.href = '/adminpanel/export-farmer-uploads/';
+    }
+    
+    // Export training images to CSV
+    function exportTrainingImages() {
+        window.location.href = '/adminpanel/export-training-images/';
+    }
+    
+    // Handle training image upload
+    document.getElementById('trainingImageForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        
+        fetch('/adminpanel/upload-training-image/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Image uploaded successfully!');
+                location.reload();
+            } else {
+                alert('Error uploading image');
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -20,6 +20,7 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 from diagnosis import views
+from adminpanel import views as admin_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -53,6 +54,6 @@ urlpatterns = [
         template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),
 
-     path('admin/', admin.site.urls),  # Default Django admin
+       # Default Django admin
      path('adminpanel/', include('adminpanel.urls')),  # Your custom dashboard
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
