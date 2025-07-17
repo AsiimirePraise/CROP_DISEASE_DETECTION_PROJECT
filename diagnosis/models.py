@@ -2,8 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
-from django.utils import timezone
-from users.models import User  
+from users.models import User 
+from django.utils import timezone 
+
+
+  
+
 
 
 
@@ -227,11 +231,15 @@ class ReportedIssue(models.Model):
 
     # models.py
 class FarmerDiagnosis(models.Model):
-    farmer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='diagnoses')
+    farmer = models.ForeignKey(User, on_delete=models.CASCADE)
     image_url = models.CharField(max_length=255)
     timestamp = models.DateTimeField(auto_now_add=True)
-    disease_details = models.JSONField()
     
+
+    def __str__(self):
+        return f"Farmer Upload #{self.id}"
+
     class Meta:
         ordering = ['-timestamp']
+
 
