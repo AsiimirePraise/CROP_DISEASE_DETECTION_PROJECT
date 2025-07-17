@@ -12,7 +12,6 @@ import base64
 from io import BytesIO 
 from django.core.paginator import Paginator
 from django.contrib import messages
-
 from django.db import transaction
 from .models import DiagnosisRequest, Disease, Crop, DiseasePrediction, ReportedIssue 
 from django.core.files.uploadedfile import InMemoryUploadedFile

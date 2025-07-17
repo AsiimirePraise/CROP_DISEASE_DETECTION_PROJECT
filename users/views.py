@@ -79,6 +79,7 @@ def dashboard(request):
               recommendations_data = json.load(file)
               recommendations = len(recommendations_data)
             else:
+              recommendations_data = []
               recommendations = 0  # Default if file doesn't exist
 
 
@@ -96,6 +97,7 @@ def dashboard(request):
                 'active_cases': active_cases,
                 'trainings': trainings,
                 'recommendations': recommendations,
+                'recommendations_data': recommendations_data,
                 'user_role': 'extension_worker'
             })
 
@@ -131,12 +133,17 @@ def disease_chart_data(request):
         .order_by('-count')
     )
     
-    labels = [item['predicted_disease__name'] or "Unknown" for item in data]
-    counts = [item['count'] for item in data]
+    labels = []
+    counts = []
+
+    for entry in data:
+        name = entry.get('disease_details__predicted_class_name') or "Unknown"
+        labels.append(name)
+        counts.append(entry['count'])
 
     return JsonResponse({
-        'labels': labels,
-        'data': counts,
+        "labels": labels,
+        "data": counts
     })
 
 def get_diagnosis_analytics(request):
