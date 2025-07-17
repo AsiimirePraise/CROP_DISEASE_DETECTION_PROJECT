@@ -1,0 +1,28 @@
+{% extends 'adminpanel/base_admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3>Edit Issue #{{ issue.id }}</h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select" required>
+                <option value="pending" {% if issue.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="in_progress" {% if issue.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                <option value="resolved" {% if issue.status == 'resolved' %}selected{% endif %}>Resolved</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Admin Notes</label>
+            <textarea name="admin_notes" class="form-control" rows="5">{{ issue.admin_notes }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success">Update Issue</button>
+        <a href="{% url 'manage-issues' %}" class="btn btn-secondary ms-2">Back</a>
+    </form>
+</div>
+{% endblock %}

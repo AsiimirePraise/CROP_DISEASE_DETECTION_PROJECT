@@ -200,11 +200,8 @@ def get_recommendations(predicted_class):
 @login_required
 def index(request):
     if request.method == 'POST':
+        try:
 
-          # Check if this is a report issue request
-        if request.POST.get('action') == 'report_issue':
-            return handle_report_issue(request)
-        
             loaded_model = load_model_once()
             if loaded_model is None:
                 return JsonResponse({"success": False, "error": f"Model could not be loaded from {MODEL_PATH}."}, status=500)
@@ -217,14 +214,26 @@ def index(request):
             if recommendations_db is None:
                 return JsonResponse({"success": False, "error": f"Recommendations could not be loaded from {RECOMMENDATIONS_PATH}."}, status=500)
 
-            if 'crop_image' not in request.FILES:
+            if 'image' not in request.FILES:
                 return JsonResponse({"success": False, "error": "No image file provided."}, status=400)
 
-            crop_image = request.FILES['crop_image']
+            image = request.FILES['image']
             allowed_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
-            file_extension = os.path.splitext(crop_image.name)[1].lower()
+            file_extension = os.path.splitext(image.name)[1].lower()
             if file_extension not in allowed_extensions:
                 return JsonResponse({"success": False, "error": "Invalid file type. Please upload JPG, PNG, or BMP files."}, status=400)
+        except Exception as e:
+
+            logger.error(f"Error in input validation: {traceback.format_exc()}")
+            return JsonResponse({
+                "success": False,
+                "error": "Failed to validate input",
+                "detail": str(e)
+            }, status=500)
+
+            logger.error(f"Error validating uploaded file: {str(e)}")
+            return JsonResponse({"success": False, "error": "An error occurred while validating the uploaded file."}, status=500)
+
 
         loaded_model = load_model_once()
         if loaded_model is None:
@@ -244,8 +253,8 @@ def index(request):
                 diagnosis_request = form.save()  # Only save ONCE, and this sets the user too
 
                 # Get the uploaded image
-                crop_image = form.cleaned_data['image']
-                processed_image_array, image_base64 = preprocess_image(crop_image)
+                image = form.cleaned_data['image']
+                processed_image_array, image_base64 = preprocess_image(image)
 
                 # Predict
                 predictions = loaded_model.predict(processed_image_array)
@@ -267,7 +276,7 @@ def index(request):
                 # Create prediction
                 DiseasePrediction.objects.create(
                     user=request.user,
-                    image=crop_image,
+                    image=image,
                     predicted_class=predicted_class_name,
                     confidence=confidence,
                     disease_info=disease_info,
@@ -296,7 +305,7 @@ def index(request):
 
     else:
         form = ImageUploadForm()
-    return render(request, 'index.html', {'form': form})
+    return render(request, 'index.html', {'form': form, 'user': request.user})
 
 def get_prediction_detail(request, prediction_id):
     """API endpoint to get prediction details"""

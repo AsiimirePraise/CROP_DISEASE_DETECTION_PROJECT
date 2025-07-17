@@ -29,6 +29,11 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="#diagnosis" onclick="showSection('charts-section')">
+                <i class="fas fa-microscope"></i> Analytics
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="#diagnosis" onclick="showSection('json-recommendations')">
                 <i class="fas fa-microscope"></i> Recommendations
             </a>
@@ -40,7 +45,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#recommendations" onclick="showSection('recommendations')">
-                <i class="fas fa-prescription-bottle"></i> Climate & Weather
+                <i class="fas fa-prescription-bottle"></i> Treatment Plans
             </a>
         </li>
         <li class="nav-item">
@@ -49,8 +54,8 @@
             </a>
         </li>
         <hr style="border-color: rgba(255,255,255,0.2);">
-        <li class="menu-item logout">
-            <a href="{% url 'logout' %}" class="menu-link">
+        <li class="menu-item logout" style="margin-top:120px;padding-left:30px;padding-top:10px;background-color:hsla(57, 40%, 28%, 1.00);height:60px;margin-bottom:0px">
+            <a href="{% url 'logout' %}" class="menu-link" style="text-decoration:none;color:white">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </a>
@@ -139,29 +144,53 @@
         </div>
         </div>
     
- <!-- JSON-based Recommendations Tab -->
-<div class="content-section" id="json-recommendations" style="display: none;">
-    <h3><i class="fas fa-notes-medical"></i> Treatment Recommendations</h3>
-    {% if recommendations_data %}
-        {% for disease, steps in recommendations_data.items %}
-            <div class="card mb-3">
-                <div class="card-header bg-success text-white">
-                    <strong>{{ disease }}</strong>
+    <!-- Field Diagnosis Section -->
+    <form method="POST">
+        {% csrf_token %}
+    <div id="diagnosis" class="content-section" style="display: none;">
+        <h3><i class="fas fa-microscope"></i> Field Diagnosis</h3>
+        <div class="chart-container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                       <label for="farmerSelect" class="form-label">Select Farmer</label>
+                         <select class="form-select" id="farmerSelect" name="farmer">
+                             <option value="">Select farmer</option>
+                               {% for farmer in farmers %}
+                           <option value="{{ farmer.id }}">{{ farmer.get_full_name|default:farmer.username }}</option>
+                                {% endfor %}
+                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imageUpload" class="form-label">Upload Field Image</label>
+                        <input type="file" class="form-control" id="imageUpload" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cropType" class="form-label">Crop Type</label>
+                        <select class="form-select" id="cropType">
+                            <option value="">Select crop type</option>
+                            <option value="maize">Maize</option>
+                            <option value="beans">Tomato</option>
+                            <option value="coffee">Coffee</option>
+                            <option value="coffee">Potato</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fieldNotes" class="form-label">Field Observations</label>
+                        <textarea class="form-control" id="fieldNotes" rows="3"></textarea>
+                    </div>
+                    <button class="btn btn-custom" onclick="diagnoseField()">
+                        <i class="fas fa-search"></i> Submit Diagnosis
+                    </button>
                 </div>
-                <div class="card-body">
-                    <ul>
-                        {% for step in steps %}
-                            <li>{{ step }}</li>
-                        {% endfor %}
-                    </ul>
+                <div class="col-md-6">
+                    <div id="diagnosisResult" class="border rounded p-3" style="min-height: 200px; background: #f8f9fa;">
+                        <p class="text-muted text-center mt-5">Submit field data to get diagnosis results</p>
+                    </div>
                 </div>
             </div>
-        {% endfor %}
-    {% else %}
-        <p>No recommendations available.</p>
-    {% endif %}
-</div>
-
+        </div>
+    </div>
     
     <!-- Farmer Management Section -->
     <div id="farmers" class="content-section" style="display: none;">
@@ -206,45 +235,44 @@
         </div>
     </div>
     
-      <!-- Recommendations Section -->
-<div id="recommendations" class="content-section" style="display: none;">
-    <h3><i class="fas fa-prescription-bottle"></i> Recommendations & Environmental Data</h3>  
-    <div class="row">
-        <div class="col-md-12 container-fluid"> <!-- 9/12 columns = 3/4 width -->
-            <div class="chart-container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="locationInput" class="form-label">Enter Location Coordinates</label>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="latitude" placeholder="Latitude">
-                                <input type="text" class="form-control" id="longitude" placeholder="Longitude">
-                                <button class="btn btn-custom" onclick="fetchWeatherData()">
-                                    <i class="fas fa-cloud-sun"></i> Get Weather
-                                </button>
-                            </div>
-                            <small class="text-muted">Or use current location:</small>
-                            <button class="btn btn-sm btn-outline-secondary mt-2" onclick="getCurrentLocation()">
-                                <i class="fas fa-location-arrow"></i> Use My Location
-                            </button>
-                            <br><br>
-                            <button class="btn btn-custom" onclick="getWeatherRecommendation()">
-                                <i class="fas fa-prescription-bottle"></i> Get Recommendations based on Weather Data
-                            </button>
-                        </div>
+    <!-- Treatment Plans Section -->
+    <div id="recommendations" class="content-section" style="display: none;">
+        <h3><i class="fas fa-prescription-bottle"></i> Treatment Plans</h3>
+        <div class="chart-container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="treatment-card">
+                        <h5>Leaf Blight</h5>
+                        <p><strong>Crop:</strong> Maize</p>
+                        <p><strong>Recommended:</strong> Fungicide application every 7 days</p>
+                        <button class="btn btn-sm btn-custom mt-2">View Details</button>
                     </div>
-                    <div class="col-md-6">
-                        <div id="weatherResults" class="border rounded p-3" style="min-height: 200px; background: #f8f9fa;">
-                            <p class="text-muted text-center mt-5">Weather data will appear here</p>
-                        </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="treatment-card">
+                        <h5>Bean Rust</h5>
+                        <p><strong>Crop:</strong> Beans</p>
+                        <p><strong>Recommended:</strong> Remove infected plants, apply sulfur spray</p>
+                        <button class="btn btn-sm btn-custom mt-2">View Details</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="treatment-card">
+                        <h5>Powdery Mildew</h5>
+                        <p><strong>Crop:</strong> Various</p>
+                        <p><strong>Recommended:</strong> Baking soda solution (1 tbsp per gallon)</p>
+                        <button class="btn btn-sm btn-custom mt-2">View Details</button>
                     </div>
                 </div>
             </div>
+            <div class="text-center mt-3">
+                <button class="btn btn-custom">
+                    <i class="fas fa-plus"></i> Create Custom Treatment Plan
+                </button>
+            </div>
         </div>
     </div>
-</div>
-
-
+    
     <!-- Farmer Education Section -->
     <div id="education" class="content-section" style="display: none;">
         <h3><i class="fas fa-chalkboard-teacher"></i> Farmer Education</h3>
@@ -278,19 +306,19 @@
         <div class="material-item">
             <i class="fas fa-file-pdf text-success"></i>
             <span>Pest Management Guide</span>
-            <a href="{{ MEDIA_URL }}farmer_training/pest_mgt_guide.pdf" download class="btn btn-sm btn-outline-success">Download</a>
+            <a href="{{ MEDIA_URL }}training/pest_management_guide.pdf" download class="btn btn-sm btn-outline-success">Download</a>
         </div>
 
         <div class="material-item">
             <i class="fas fa-file-video text-success"></i>
             <span>Proper Fertilizer Application</span>
-            <a href="{{ MEDIA_URL }}farmer_training/fertilizer_application.mp4" target="_blank" class="btn btn-sm btn-outline-success">View</a>
+            <a href="{{ MEDIA_URL }}training/fertilizer_application.mp4" target="_blank" class="btn btn-sm btn-outline-success">View</a>
         </div>
 
         <div class="material-item">
             <i class="fas fa-file-image text-success"></i>
             <span>Disease Identification Charts</span>
-            <a href="{{ MEDIA_URL }}farmer_training/plant_disease_chart.jpg" download class="btn btn-sm btn-outline-success">Download</a>
+            <a href="{{ MEDIA_URL }}training/disease_charts.jpg" download class="btn btn-sm btn-outline-success">Download</a>
         </div>
     </div>
 </div>
@@ -299,12 +327,44 @@
             </div>
         </div>
     </div>
-</div>
+
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js">
-    
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch("/users/chart-data/")
+            .then(response => response.json())
+            .then(result => {
+                const ctx = document.getElementById('diseaseChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.labels,
+                        datasets: [{
+                            label: 'Diagnosed Cases',
+                            data: result.data,
+                            backgroundColor: [
+                                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Diagnoses by Disease'
+                            }
+                        }
+                    }
+                });
+            });
+    });
 </script>
 <style>
     :root {
@@ -549,75 +609,6 @@
     console.error('Failed to load analytics:', error);
   }
 }
-let weatherData = null;       
-async function fetchWeatherData() {
-    const lat = document.getElementById('latitude').value;
-    const lon = document.getElementById('longitude').value;
-    const resultsDiv = document.getElementById('weatherResults');
-    
-    // Validate inputs
-    if (!lat || !lon) {
-        resultsDiv.innerHTML = '<div class="alert alert-danger">Please enter valid coordinates</div>';
-        return;
-    }
-
-    try {
-        // Construct PROPER URL with correct parameter names
-        const url = `/recommendations/weather/?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
-        
-        const response = await fetch(url);
-        
-        // Check if response is OK (status 200-299)
-        if (!response.ok) {
-            throw new Error(`Server returned ${response.status}`);
-        }
-        
-        // Parse JSON response
-        const data = await response.json();
-        
-         // Store weather data globally
-        weatherData = data;
-
-        // Display results
-        resultsDiv.innerHTML = `
-            <h5>Current Weather</h5>
-            <p>Temperature: ${data.temperature}°C</p>
-            <p>Humidity: ${data.humidity}%</p>
-            <p>Conditions: ${data.conditions}</p>
-        `;
-    } catch (error) {
-        console.error('Error:', error);
-        resultsDiv.innerHTML = `<div class="alert alert-danger">Failed to load weather data: ${error.message}</div>`;
-    }
-}
-
-function getWeatherRecommendation() {
-   if (!weatherData) {
-        alert('Please fetch weather data first');
-        return;
-    }
-    
-    let recommendation = '';
-    
-    if (weatherData.humidity > 80) {
-        recommendation = "Increased risk of fungal diseases - consider preventive fungicide applications";
-    } else if (weatherData.temperature > 30) {
-        recommendation = "High temperatures may stress plants - ensure adequate irrigation";
-    } else {
-        recommendation = "Favorable conditions for most crops because humidity is moderate(less than 80%) and temperature is average(below 30°C)";
-        // Display the recommendation
-    const resultsDiv = document.getElementById('weatherResults');
-    const currentContent = resultsDiv.innerHTML;
-    
-    resultsDiv.innerHTML = currentContent + `
-        <hr>
-        <h5>Recommendation</h5>
-        <div class="alert alert-info">
-            <i class="fas fa-lightbulb"></i> ${recommendation}
-        </div>
-    `;
-    }
-    }
 
 function updateCharts(analyticsData) {
   // Example for disease distribution chart
@@ -792,21 +783,6 @@ document.addEventListener('DOMContentLoaded', function () {
     a.click();
     document.body.removeChild(a);
   });
-function getCurrentLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-                document.getElementById('latitude').value = position.coords.latitude;
-                document.getElementById('longitude').value = position.coords.longitude;
-            },
-            error => {
-                alert(`Error getting location: ${error.message}`);
-            }
-        );
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
-}
 
     // Field diagnosis function
     function diagnoseField() {

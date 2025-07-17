@@ -1,0 +1,55 @@
+{% extends 'adminpanel/base_admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Reported Issues</h2>
+
+    {% if issues %}
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>User</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Submitted</th>
+                <th>Admin Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in issues %}
+            <tr>
+                <td>{{ issue.id }}</td>
+                <td>
+                    {% if issue.user %}
+                    {{ issue.user.username }}
+                    {% else %}
+                     Anonymous
+                     {% endif %}
+                </td>
+
+                <td>{{ issue.title }}</td>
+                <td>
+                    <span class="badge 
+                        {% if issue.status == 'pending' %} bg-warning 
+                        {% elif issue.status == 'in_progress' %} bg-info 
+                        {% elif issue.status == 'resolved' %} bg-success 
+                        {% endif %}">
+                        {{ issue.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ issue.created_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ issue.admin_notes|default:"-" }}</td>
+                <td>
+                    <a href="{% url 'edit_issue' issue.id %}" class="btn btn-sm btn-primary">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <div class="alert alert-info">No issues reported yet.</div>
+    {% endif %}
+</div>
+{% endblock %}
