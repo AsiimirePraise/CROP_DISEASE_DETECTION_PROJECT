@@ -12,4 +12,5 @@ urlpatterns = [
    # path('treatments/<int:treatment_id>/', views.treatment_detail_view, name='treatment_detail'),
    # path('preventive/', views.preventive_measures_view, name='preventive'),
     path('weather/', views.get_weather_data, name='get_weather_data'),
+
 ]
