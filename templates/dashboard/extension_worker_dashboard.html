@@ -25,12 +25,7 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#diagnosis" onclick="showSection('charts-section')">
-                <i class="fas fa-microscope"></i> Analytics
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#diagnosis" onclick="showSection('charts-section')">
-                <i class="fas fa-microscope"></i> Analytics
+                <i class="fas fa-chart-pie"></i> Analytics
             </a>
         </li>
         <li class="nav-item">
@@ -145,52 +140,27 @@
         </div>
     
     <!-- Field Diagnosis Section -->
-    <form method="POST">
-        {% csrf_token %}
-    <div id="diagnosis" class="content-section" style="display: none;">
-        <h3><i class="fas fa-microscope"></i> Field Diagnosis</h3>
-        <div class="chart-container">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
-                       <label for="farmerSelect" class="form-label">Select Farmer</label>
-                         <select class="form-select" id="farmerSelect" name="farmer">
-                             <option value="">Select farmer</option>
-                               {% for farmer in farmers %}
-                           <option value="{{ farmer.id }}">{{ farmer.get_full_name|default:farmer.username }}</option>
-                                {% endfor %}
-                         </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="imageUpload" class="form-label">Upload Field Image</label>
-                        <input type="file" class="form-control" id="imageUpload" accept="image/*">
-                    </div>
-                    <div class="mb-3">
-                        <label for="cropType" class="form-label">Crop Type</label>
-                        <select class="form-select" id="cropType">
-                            <option value="">Select crop type</option>
-                            <option value="maize">Maize</option>
-                            <option value="beans">Tomato</option>
-                            <option value="coffee">Coffee</option>
-                            <option value="coffee">Potato</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fieldNotes" class="form-label">Field Observations</label>
-                        <textarea class="form-control" id="fieldNotes" rows="3"></textarea>
-                    </div>
-                    <button class="btn btn-custom" onclick="diagnoseField()">
-                        <i class="fas fa-search"></i> Submit Diagnosis
-                    </button>
+<div class="content-section" id="json-recommendations" style="display: none;">
+    <h3><i class="fas fa-notes-medical"></i> Treatment Recommendations</h3>
+    {% if recommendations_data %}
+        {% for disease, steps in recommendations_data.items %}
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white">
+                    <strong>{{ disease }}</strong>
                 </div>
-                <div class="col-md-6">
-                    <div id="diagnosisResult" class="border rounded p-3" style="min-height: 200px; background: #f8f9fa;">
-                        <p class="text-muted text-center mt-5">Submit field data to get diagnosis results</p>
-                    </div>
+                <div class="card-body">
+                    <ol>
+                        {% for step in steps %}
+                            <li>{{ step }}</li>
+                        {% endfor %}
+                    </ol>
                 </div>
             </div>
-        </div>
-    </div>
+        {% endfor %}
+    {% else %}
+        <p>No recommendations available.</p>
+    {% endif %}
+</div>
     
     <!-- Farmer Management Section -->
     <div id="farmers" class="content-section" style="display: none;">
