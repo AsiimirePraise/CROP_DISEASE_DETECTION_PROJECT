@@ -14,4 +14,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(template_name='logout.html'), name='logout'),
     path('chart-data/', views.disease_chart_data, name='disease_chart_data'),
     path('schedule-training/', views.schedule_training, name='schedule_training'),
+    path('analytics/trainings-by-month/', views.trainings_by_month, name='trainings_by_month'),
 ]
