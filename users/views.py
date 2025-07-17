@@ -98,6 +98,7 @@ def dashboard(request):
               recommendations_data = json.load(file)
               recommendations = len(recommendations_data)
             else:
+              recommendations_data = []
               recommendations = 0  # Default if file doesn't exist
 
 
@@ -115,6 +116,7 @@ def dashboard(request):
                 'active_cases': active_cases,
                 'trainings': trainings,
                 'recommendations': recommendations,
+                'recommendations_data': recommendations_data,
                 'user_role': 'extension_worker'
             })
 
