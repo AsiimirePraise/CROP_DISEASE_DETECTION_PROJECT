@@ -71,7 +71,7 @@ DATABASES = {
 
         
 
-        'NAME': 'crop_disease_db',
+        'NAME': 'crop_disease_db2',
         'USER': 'postgres',
         'PASSWORD': 'root',
         'HOST': 'localhost',
