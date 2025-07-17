@@ -108,34 +108,7 @@
                             <i class="fas fa-chart-line text-primary fa-2x"></i>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-success bg-opacity-10 p-2 rounded-circle me-3">
-                                        <i class="fas fa-arrow-up text-success"></i>
-                                    </div>
-                                    <div>
-                                        <div class="h4 mb-0 fw-bold text-dark">{{ diagnoses_today|default:"0" }}</div>
-                                        <small class="text-muted">Today</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-info bg-opacity-10 p-2 rounded-circle me-3">
-                                        <i class="fas fa-clock text-info"></i>
-                                    </div>
-                                    <div>
-                                        <div class="h4 mb-0 fw-bold text-dark">{{ diagnoses_this_week|default:"0" }}</div>
-                                        <small class="text-muted">This week</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -146,7 +119,7 @@
                     <div class="d-flex justify-content-between align-items-start mb-4">
                         <div>
                             <h5 class="text-success fw-bold mb-1">
-                                <i class="fas fa-bullseye me-2"></i>AI Model Performance
+                                <i class="fas fa-bullseye me-2"></i>Average Model Performance
                             </h5>
                             <div class="h1 mb-0 fw-bold text-dark">{{ diagnosis_stats.model_accuracy|default:"0" }}%</div>
                             <small class="text-muted">Diagnosis accuracy rate</small>
@@ -162,19 +135,8 @@
                         </div>
                        
                     </div>
-                    <div class="row">
-                        <div class="col-6">
-                            <div class="text-center">
-                                <div class="h5 mb-0 fw-bold text-success">{{ correct_diagnoses|default:"0" }}</div>
-                                <small class="text-muted">Correct</small>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="text-center">
-                                <div class="h5 mb-0 fw-bold text-warning">{{ pending_reviews|default:"0" }}</div>
-                                <small class="text-muted">Under Review</small>
-                            </div>
-                        </div>
+                    
+                        
                     </div>
                 </div>
             </div>
