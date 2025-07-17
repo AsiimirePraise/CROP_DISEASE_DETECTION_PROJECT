@@ -37,3 +37,6 @@ echo "*.pyd" >> .gitignore
 echo ".Python" >> .gitignore
 echo "env/" >> .gitignore
 echo "venv/" >> .gitignore
+diagnosis/migrations/__init.py__
+recommendations/migrations/__init.py__
+datadump.json

@@ -5,7 +5,7 @@ from django.contrib.auth import logout
 from django.contrib.auth import get_user_model
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
-from diagnosis.models import DiagnosisRequest, FarmerDiagnosis
+from diagnosis.models import DiagnosisRequest, FarmerDiagnosis, DiseasePrediction
 from recommendations.models import Recommendation, Training
 from django.utils import timezone
 from datetime import timedelta
@@ -16,6 +16,7 @@ import json
 import os
 from django.conf import settings
 from recommendations.forms import TrainingForm
+from django.db.models.functions import TruncMonth
 
 User = get_user_model()
 
@@ -125,21 +126,33 @@ def store_diagnosis(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error'}, status=405)
 
+def trainings_by_month(request):
+    training_counts = (
+        Training.objects
+        .annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('month')
+    )
+
+    labels = [entry['month'].strftime('%B') for entry in training_counts]
+    data = [entry['count'] for entry in training_counts]
+
+    return JsonResponse({
+        'labels': labels,
+        'data': data
+    })
+
 def disease_chart_data(request):
     data = (
-        DiagnosisRequest.objects
-        .values('predicted_disease__name')
+        DiseasePrediction.objects
+        .values('predicted_class')
         .annotate(count=Count('id'))
         .order_by('-count')
     )
-    
-    labels = []
-    counts = []
 
-    for entry in data:
-        name = entry.get('disease_details__predicted_class_name') or "Unknown"
-        labels.append(name)
-        counts.append(entry['count'])
+    labels = [entry['predicted_class'] for entry in data]
+    counts = [entry['count'] for entry in data]
 
     return JsonResponse({
         "labels": labels,
