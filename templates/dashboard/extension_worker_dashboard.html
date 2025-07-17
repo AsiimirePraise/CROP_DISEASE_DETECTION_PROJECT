@@ -135,21 +135,6 @@
         {% endif %}
     </div>
 </div>
-            <div class="col-md-6">
-                <div class="chart-container">
-                    <h5><i class="fas fa-bullhorn"></i> Recent Announcements</h5>
-                    <div class="announcement">
-                        <strong>New Government Subsidy</strong>
-                        <p>Register farmers for fertilizer subsidy program by July 20th</p>
-                        <small class="text-muted">Posted 2 days ago</small>
-                    </div>
-                    <div class="announcement">
-                        <strong>Weather Advisory</strong>
-                        <p>Heavy rains expected next week - advise farmers on water management</p>
-                        <small class="text-muted">Posted 5 days ago</small>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     
@@ -222,36 +207,42 @@
     
       <!-- Recommendations Section -->
 <div id="recommendations" class="content-section" style="display: none;">
-    <h3><i class="fas fa-prescription-bottle"></i> Recommendations & Environmental Data</h3>
-    <div class="chart-container">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label for="locationInput" class="form-label">Enter Location Coordinates</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="latitude" placeholder="Latitude">
-                        <input type="text" class="form-control" id="longitude" placeholder="Longitude">
-                        <button class="btn btn-custom" onclick="fetchWeatherData()">
-                            <i class="fas fa-cloud-sun"></i> Get Weather
-                        </button>
+    <h3><i class="fas fa-prescription-bottle"></i> Recommendations & Environmental Data</h3>  
+    <div class="row">
+        <div class="col-md-12 container-fluid"> <!-- 9/12 columns = 3/4 width -->
+            <div class="chart-container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="locationInput" class="form-label">Enter Location Coordinates</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="latitude" placeholder="Latitude">
+                                <input type="text" class="form-control" id="longitude" placeholder="Longitude">
+                                <button class="btn btn-custom" onclick="fetchWeatherData()">
+                                    <i class="fas fa-cloud-sun"></i> Get Weather
+                                </button>
+                            </div>
+                            <small class="text-muted">Or use current location:</small>
+                            <button class="btn btn-sm btn-outline-secondary mt-2" onclick="getCurrentLocation()">
+                                <i class="fas fa-location-arrow"></i> Use My Location
+                            </button>
+                            <br><br>
+                            <button class="btn btn-custom" onclick="getWeatherRecommendation()">
+                                <i class="fas fa-prescription-bottle"></i> Get Recommendations based on Weather Data
+                            </button>
+                        </div>
                     </div>
-                    <small class="text-muted">Or use current location:</small>
-                    <button class="btn btn-sm btn-outline-secondary mt-2" onclick="getCurrentLocation()">
-                        <i class="fas fa-location-arrow"></i> Use My Location
-                    </button>
-                    <br><br>
-                    <button class="btn btn-custom" onclick="getWeatherRecommendation()">
-                            <i class="fas fa-prescription-bottle"></i> Get Recommendations based on Weather Data
-                        </button>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div id="weatherResults" class="border rounded p-3" style="min-height: 200px; background: #f8f9fa;">
-                    <p class="text-muted text-center mt-5">Weather data will appear here</p>
+                    <div class="col-md-6">
+                        <div id="weatherResults" class="border rounded p-3" style="min-height: 200px; background: #f8f9fa;">
+                            <p class="text-muted text-center mt-5">Weather data will appear here</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 
     <!-- Farmer Education Section -->
     <div id="education" class="content-section" style="display: none;">
@@ -287,19 +278,19 @@
         <div class="material-item">
             <i class="fas fa-file-pdf text-success"></i>
             <span>Pest Management Guide</span>
-            <a href="{{ MEDIA_URL }}training/pest_management_guide.pdf" download class="btn btn-sm btn-outline-success">Download</a>
+            <a href="{{ MEDIA_URL }}farmer_training/pest_mgt_guide.pdf" download class="btn btn-sm btn-outline-success">Download</a>
         </div>
 
         <div class="material-item">
             <i class="fas fa-file-video text-success"></i>
             <span>Proper Fertilizer Application</span>
-            <a href="{{ MEDIA_URL }}training/fertilizer_application.mp4" target="_blank" class="btn btn-sm btn-outline-success">View</a>
+            <a href="{{ MEDIA_URL }}farmer_training/fertilizer_application.mp4" target="_blank" class="btn btn-sm btn-outline-success">View</a>
         </div>
 
         <div class="material-item">
             <i class="fas fa-file-image text-success"></i>
             <span>Disease Identification Charts</span>
-            <a href="{{ MEDIA_URL }}training/disease_charts.jpg" download class="btn btn-sm btn-outline-success">Download</a>
+            <a href="{{ MEDIA_URL }}farmer_training/plant_disease_chart.jpg" download class="btn btn-sm btn-outline-success">Download</a>
         </div>
     </div>
 </div>
@@ -308,44 +299,12 @@
             </div>
         </div>
     </div>
-
+</div>
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js">
-    document.addEventListener('DOMContentLoaded', function () {
-        fetch("/users/chart-data/")
-            .then(response => response.json())
-            .then(result => {
-                const ctx = document.getElementById('diseaseChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: result.labels,
-                        datasets: [{
-                            label: 'Diagnosed Cases',
-                            data: result.data,
-                            backgroundColor: [
-                                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom'
-                            },
-                            title: {
-                                display: true,
-                                text: 'Diagnoses by Disease'
-                            }
-                        }
-                    }
-                });
-            });
-    });
+    
 </script>
 <style>
     :root {
@@ -571,6 +530,10 @@
         
         // Show selected section
         document.getElementById(sectionId).style.display = 'block';
+
+          if (sectionId === 'dashboard') {
+        initCharts(); // Call a function that sets up all charts
+    }
         
         // Add active class to clicked nav link
         event.target.classList.add('active');
@@ -720,6 +683,39 @@ function updateCharts(analyticsData) {
         });
     });
 
+document.addEventListener('DOMContentLoaded', function () {
+        fetch("/users/chart-data/")
+            .then(response => response.json())
+            .then(result => {
+                const ctx = document.getElementById('diseaseChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.labels,
+                        datasets: [{
+                            label: 'Diagnosed Cases',
+                            data: result.data,
+                            backgroundColor: [
+                                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Diagnoses by Disease'
+                            }
+                        }
+                    }
+                });
+            });
+    });
   // Search farmers
   document.getElementById("searchInput").addEventListener("keyup", function () {
     const query = this.value.toLowerCase();

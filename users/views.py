@@ -152,12 +152,17 @@ def disease_chart_data(request):
         .order_by('-count')
     )
     
-    labels = [item['predicted_disease__name'] or "Unknown" for item in data]
-    counts = [item['count'] for item in data]
+    labels = []
+    counts = []
+
+    for entry in data:
+        name = entry.get('disease_details__predicted_class_name') or "Unknown"
+        labels.append(name)
+        counts.append(entry['count'])
 
     return JsonResponse({
-        'labels': labels,
-        'data': counts,
+        "labels": labels,
+        "data": counts
     })
 
 def get_diagnosis_analytics(request):
