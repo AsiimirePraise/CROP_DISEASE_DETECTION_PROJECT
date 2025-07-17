@@ -1,12 +1,15 @@
 
+from turtle import pd
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from adminpanel.models import FarmerUpload, TrainingImage
 from users.models import Profile
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import CustomUserCreationForm
+from diagnosis.models import DiagnosisRequest, DiseasePrediction, FarmerDiagnosis
 from .forms import EditUserForm 
 from django.db import transaction
 from django.db.models import Count, Q, Avg
@@ -14,6 +17,13 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from diagnosis.models import DiagnosisRequest
 import json
+import csv
+from io import StringIO
+from django.http import HttpResponse, JsonResponse
+from django.core.files.storage import FileSystemStorage
+from django.views.decorators.csrf import csrf_exempt
+import pandas as pd 
+
 # Optional: Decorator to allow only superusers
 def admin_required(view_func):
     decorated_view_func = login_required(user_passes_test(lambda u: u.is_superuser)(view_func))
@@ -219,3 +229,102 @@ def admin_dashboard(request):
         'diagnosis_stats': diagnosis_stats,
 
     })
+@user_passes_test(lambda u: u.is_superuser)
+def manage_datasets(request):
+    farmer_uploads = FarmerUpload.objects.all().order_by('-upload_date')
+    training_images = TrainingImage.objects.all().order_by('-upload_date')
+    
+    context = {
+        'farmer_uploads': farmer_uploads,
+        'training_images': training_images,
+    }
+    return render(request, 'adminpanel/manage_datasets.html', context)
+
+@user_passes_test(lambda u: u.is_superuser)
+def verify_upload(request, upload_id):
+    if request.method == 'POST':
+        upload = FarmerUpload.objects.get(id=upload_id)
+        upload.verified = True
+        upload.correct_prediction = request.POST.get('correct_prediction') == 'true'
+        upload.admin_notes = request.POST.get('admin_notes', '')
+        upload.save()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@csrf_exempt  # OR use csrf token properly via headers in JS (see note below)
+@user_passes_test(lambda u: u.is_superuser)
+def upload_training_image(request):
+    if request.method == 'POST':
+        image = request.FILES.get('image')
+        label = request.POST.get('label')
+        
+        if image and label:
+            TrainingImage.objects.create(
+                image=image,
+                label=label,
+                uploaded_by=request.user,
+                verified=True
+            )
+            return JsonResponse({'status': 'success'})
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Missing image or label'}, status=400)
+    
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+@user_passes_test(lambda u: u.is_superuser)
+def export_to_csv(request):
+    from datetime import datetime
+    import pandas as pd
+    from django.http import HttpResponse
+
+    farmer_uploads = FarmerUpload.objects.filter(verified=True)
+
+    data = []
+    for upload in farmer_uploads:
+        data.append({
+            'image_path': upload.image.url if upload.image else '',
+            'label': f"{upload.crop_type}__{upload.disease}",
+            'crop_type': upload.crop_type,
+            'disease': upload.disease,
+            'severity': upload.severity,
+            'primary_affected_part': upload.primary_affected_part,
+            'affected_parts': ', '.join(upload.affected_parts) if isinstance(upload.affected_parts, list) else '',
+            'description': upload.description,
+            'symptoms': upload.symptoms,
+            'upload_date': upload.upload_date.strftime('%Y-%m-%d %H:%M:%S'),
+        })
+
+    df = pd.DataFrame(data)
+
+    response = HttpResponse(content_type='text/csv')
+    filename = f"farmer_uploads_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    df.to_csv(response, index=False)
+    return response
+
+@user_passes_test(lambda u: u.is_superuser)
+def export_training_images(request):
+    # Get all verified training images
+    training_images = TrainingImage.objects.filter(verified=True)
+    
+    # Prepare data for CSV
+    data = []
+    for img in training_images:
+        data.append({
+            'image_path': img.image.url,
+            'label': img.label,
+            'upload_date': img.upload_date,
+            'uploaded_by': img.uploaded_by.username if img.uploaded_by else 'system',
+        })
+    
+    # Convert to DataFrame
+    df = pd.DataFrame(data)
+    
+    # Create CSV response
+    response = HttpResponse(content_type='text/csv')
+    filename = f"training_images_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    df.to_csv(response, index=False)
+    return response
