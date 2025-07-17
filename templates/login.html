@@ -48,8 +48,8 @@
                                     <span class="login-emoji">🌾</span>
                                 </div>
                             </div>
-                            <h2 class="login-title">Welcome</h2>
-                            <p class="login-subtitle">Sign in to your AgroDetect account</p>
+                            <marquee direction="left"><h2 class="login-title" style="color:white;font-weight:800;line-height:1.5;">Welcome</h2></marquee>
+                            <center><p class="login-subtitle">Sign in to your AgroDetect account</p></center>
                         </div>
                         
                         <div class="login-body">
@@ -111,7 +111,7 @@
                                 {% endif %}
 
                                 <div class="d-grid mb-3">
-                                    <button type="submit" class="btn btn-login">
+                                    <button type="submit" class="btn btn-login" style="width:100px;height:50px;background-color:green;margin-left:170px;padding:10px;">
                                         <span class="btn-text">Sign In</span>
                                         <span class="btn-icon">🌱</span>
                                     </button>
@@ -123,7 +123,7 @@
                                     <span class="divider-text">New to AgroDetect?</span>
                                 </div>
                                 <p class="signup-text">
-                                    <a href="{% url 'register' %}" class="signup-link">Create your account</a>
+                                    <a href="{% url 'register' %}" class="signup-link" >Create your account</a>
                                 </p>
                                 <p class="forgot-password">
                                     <a href="{% url 'password_reset' %}" class="forgot-link">Forgot your password?</a>
