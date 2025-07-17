@@ -60,28 +60,9 @@ def dashboard(request):
         if hasattr(request.user, 'profile'):
             user_role = request.user.profile.get_user_role()
         
-        if user_role == 'farmer':
+        if user_role in ['farmer', 'agronomist']:
             return redirect('diagnosis:index')
         
-        elif user_role == 'agronomist':
-            today = timezone.now().date()
-
-            total_diagnoses = DiagnosisRequest.objects.count()
-
-            active_users_today = User.objects.filter(
-                last_login__gte=today
-            ).distinct().count()
-
-            recommendations = Recommendation.objects.all().count()
-
-            context = {
-                'diagnoses': total_diagnoses,
-                'active_users': active_users_today,
-                'recommendations': recommendations,
-                'user_role': 'agronomist'
-            }
-            return render(request, 'dashboard/agronomist_dashboard.html', context)
-
         elif user_role == 'extension_worker':
             farmers = User.objects.filter(profile__farmer=True)
             farmer_count = farmers.count()

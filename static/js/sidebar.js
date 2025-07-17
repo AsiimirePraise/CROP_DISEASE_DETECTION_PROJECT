@@ -715,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       // Get form data
       const formData = new FormData(this);
-      
+      const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
       // Disable submit button
       if (submitBtn) {
         submitBtn.disabled = true;
@@ -728,6 +728,7 @@ document.addEventListener('DOMContentLoaded', function() {
         body: formData,
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
+           'X-CSRFToken': csrftoken 
         }
       })
       .then(response => {
