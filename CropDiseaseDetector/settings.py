@@ -72,7 +72,7 @@ DATABASES = {
 
         'NAME': 'crop_disease_db',
         'USER': 'postgres',
-        'PASSWORD': '12345',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
     }

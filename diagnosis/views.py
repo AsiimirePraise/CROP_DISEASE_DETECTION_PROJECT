@@ -209,7 +209,6 @@ def index(request):
         if request.POST.get('action') == 'report_issue':
             return handle_report_issue(request)
         
-        try:
             loaded_model = load_model_once()
             if loaded_model is None:
                 return JsonResponse({"success": False, "error": f"Model could not be loaded from {MODEL_PATH}."}, status=500)
