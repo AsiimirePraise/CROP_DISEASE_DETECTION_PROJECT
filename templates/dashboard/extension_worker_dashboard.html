@@ -24,6 +24,11 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="#diagnosis" onclick="showSection('charts-section')">
+                <i class="fas fa-microscope"></i> Analytics
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="#diagnosis" onclick="showSection('json-recommendations')">
                 <i class="fas fa-microscope"></i> Recommendations
             </a>
@@ -84,29 +89,7 @@
             </div>
         </div>
         
-        <!-- Charts Row -->
-        <div class="row">
-            <div class="col-md-8">
-                <div class="chart-container">
-                    <h5><i class="fas fa-map-marked-alt"></i> Field Visit Activity</h5>
-                    <canvas id="visitChart" width="400" height="200"></canvas>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="chart-container">
-                    <h5><i class="fas fa-chart-pie"></i> Common Issues</h5>
-                    <canvas id="issueChart" width="400" height="200"></canvas>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="chart-container">
-                    <h5><i class="fas fa-chart-pie"></i> Diagnoses </h5>
-                    <canvas id="diseaseChart" width="400" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Recent Activities -->
+        <!-- Upcoming Trainings -->
         <div class="row">
             <div class="col-md-12 mt-4">
     <div class="education-card">
@@ -137,6 +120,24 @@
 </div>
         </div>
     </div>
+    <!-- Analytics Section -->       
+      <!-- Charts Row -->
+       <div class="content-section" id="charts-section" style="display: none;">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="chart-container">
+                   <h5><i class="fas fa-calendar-alt"></i> Trainings Per Month</h5>
+                   <canvas id="trainingMonthChart" width="400" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="chart-container">
+                    <h5><i class="fas fa-chart-pie"></i> Diagnoses </h5>
+                    <canvas id="diseaseChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        </div>
     
  <!-- JSON-based Recommendations Tab -->
 <div class="content-section" id="json-recommendations" style="display: none;">
@@ -274,7 +275,6 @@
 <div class="col-md-6">
     <div class="education-card">
         <h5><i class="fas fa-book"></i> Training Materials</h5>
-
         <div class="material-item">
             <i class="fas fa-file-pdf text-success"></i>
             <span>Pest Management Guide</span>
@@ -531,7 +531,7 @@
         // Show selected section
         document.getElementById(sectionId).style.display = 'block';
 
-          if (sectionId === 'dashboard') {
+          if (sectionId === 'charts-section') {
         initCharts(); // Call a function that sets up all charts
     }
         
@@ -716,6 +716,51 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             });
     });
+    document.addEventListener('DOMContentLoaded', function () {
+    fetch('/analytics/trainings-by-month/')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('trainingMonthChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Number of Trainings',
+                        data: data.data,
+                        backgroundColor: '#2ecc71',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Trainings Conducted Per Month'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Training Count'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Month'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+});
+
   // Search farmers
   document.getElementById("searchInput").addEventListener("keyup", function () {
     const query = this.value.toLowerCase();
