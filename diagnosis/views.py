@@ -224,8 +224,17 @@ def index(request):
             if file_extension not in allowed_extensions:
                 return JsonResponse({"success": False, "error": "Invalid file type. Please upload JPG, PNG, or BMP files."}, status=400)
         except Exception as e:
+
+            logger.error(f"Error in input validation: {traceback.format_exc()}")
+            return JsonResponse({
+                "success": False,
+                "error": "Failed to validate input",
+                "detail": str(e)
+            }, status=500)
+
             logger.error(f"Error validating uploaded file: {str(e)}")
             return JsonResponse({"success": False, "error": "An error occurred while validating the uploaded file."}, status=500)
+
 
         loaded_model = load_model_once()
         if loaded_model is None:

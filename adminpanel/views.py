@@ -23,7 +23,7 @@ from django.http import HttpResponse, JsonResponse
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 import pandas as pd 
-
+from diagnosis.models import ReportedIssue
 # Optional: Decorator to allow only superusers
 def admin_required(view_func):
     decorated_view_func = login_required(user_passes_test(lambda u: u.is_superuser)(view_func))
@@ -328,3 +328,26 @@ def export_training_images(request):
     
     df.to_csv(response, index=False)
     return response
+@login_required
+
+def manage_issues(request):
+    issues = ReportedIssue.objects.order_by('-created_at')
+    return render(request, 'adminpanel/manage_issues.html', {'issues': issues})
+
+@login_required
+
+def edit_issue(request, issue_id):
+    issue = get_object_or_404(ReportedIssue, id=issue_id)
+
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        admin_notes = request.POST.get('admin_notes')
+
+        issue.status = status
+        issue.admin_notes = admin_notes
+        issue.save()
+
+        messages.success(request, f"Issue #{issue.id} has been updated.")
+        return redirect('manage-issues')
+
+    return render(request, 'adminpanel/edit_issue.html', {'issue': issue})
