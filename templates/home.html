@@ -54,6 +54,24 @@
         position: relative;
         z-index: 2;
     }
+
+    /* Global rounded corners */
+    .feature-card,
+    .step-card {
+         border-radius: 15px !important;
+         overflow: hidden;
+    }
+
+    .feature-card {
+        opacity: 0;
+        transform: translateY(40px);
+        transition: all 0.6s ease;
+    }
+    .feature-card.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
     
     .step-circle {
         width: 120px;
@@ -497,4 +515,21 @@
         </div>
     </div>
 </section>
+<script>
+  const cards = document.querySelectorAll('.feature-card');
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('show');
+        }, i * 200);  // delay based on index
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  cards.forEach(card => observer.observe(card));
+</script>
+
 {% endblock %}

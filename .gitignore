@@ -29,6 +29,8 @@ venv/
 __pycache__/
 *.pyc
 
+*.jpg
+
 # Create or edit .gitignore file
 echo "__pycache__/" >> .gitignore
 echo "*.pyc" >> .gitignore
